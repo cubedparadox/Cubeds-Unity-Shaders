@@ -20,7 +20,7 @@ Currently built for Unity 5.3.4p1 due to project constraints, but will be update
 Project contains the following assets:  
 * <a href="http://acegikmo.com/shaderforge/">ShaderForge</a> (gitignored)
 * <a href="http://unity-chan.com/">SD UnityChan</a>
-* <a href="http://u3d.as/9TS/">Instant Screenshot</a>
+* <a href="http://saadkhawaja.com/instant-hi-res-screenshot/">Instant Screenshot</a>
 
 ### Tip Jar  
 <a href="https://digitaltipjar.com/cubedparadox?_external=true"><img alt="Tip Jar" style="border-width: 0; background-color: grey;" src="Media/tipbutton.png" /></a>
