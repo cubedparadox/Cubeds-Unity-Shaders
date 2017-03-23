@@ -5,10 +5,13 @@ A compilation of custom shaders for Unity3D.
 
 Currently built for Unity 5.3.4p1 due to project constraints, but will be updated to 5.6.x at some point.
 
-## Included Shaders
+## Shaders
 * Unlit Shadowed  
 ![alt text](Media/Unlit_Shadowed_thumb.png)
   * A simple unlit texture shader, has inputs for main color tint and shadow color tint.
+* Flat Lit Toon  
+![alt text](Media/Flat_Lit_Toon_thumb.png) ![alt text](Media/Flat_Lit_Toon_Dark_thumb.png)
+  * Looks like a unlit shader under good neutral lighting, but actually responds to full ambient and realtime lighting information.
 * Simple Gradient Sky  
 ![alt text](Media/Simple_Gradient_Sky_thumb.png)
   * A simple procedural skybox that fades from a sky color to a horizon color
