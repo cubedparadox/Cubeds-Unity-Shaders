@@ -18,6 +18,9 @@ Currently built for Unity 5.3.4p1 due to project constraints, but will be update
 * Flat Lit Toon Rainbow  
 ![alt text](Media/Flat_Lit_Toon_Rainbow.gif)
   * A version of 'Flat Lit Toon' with a cycling rainbow color. Hue and Saturation are exposed, Supports color mask.
+* Flat Lit Toon Distance Fade  
+![alt text](Media/Flat_Lit_Toon_Distance_Fade.gif)
+  * A version of 'Flat Lit Toon' that fades in based on proximity to camera. Uses noise to dither the fade effect into a cutout. Dither amount, color tint, and color mask are exposed.
 * Simple Gradient Sky  
 ![alt text](Media/Simple_Gradient_Sky_thumb.png)
   * A simple procedural skybox that fades from a sky color to a horizon color
