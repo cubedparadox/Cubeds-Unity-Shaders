@@ -7,12 +7,12 @@ Currently built for Unity 5.3.4p1 due to project constraints, but will be update
 
 ## Included Shaders
 * Unit Shadowed
-⋅⋅* A simple unlit texture shader, has inputs for main color tint and shadow color tint.
+  * A simple unlit texture shader, has inputs for main color tint and shadow color tint.
 * Simple Gradient Sky
-⋅⋅* A simple procedural skybox that fades from a sky color to a horizon color
+  * A simple procedural skybox that fades from a sky color to a horizon color
 
 ## Notes
-Project contains the following assets:
+Project contains the following assets:  
 * ShaderForge (gitignored)
 * <a href="http://unity-chan.com/">SD UnityChan</a>.
 
