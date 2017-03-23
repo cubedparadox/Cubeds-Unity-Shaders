@@ -11,7 +11,7 @@ Currently built for Unity 5.3.4p1 due to project constraints, but will be update
   * A simple unlit texture shader, has inputs for main color tint and shadow color tint.
 * Flat Lit Toon  
 ![alt text](Media/Flat_Lit_Toon_Thumb.png) ![alt text](Media/Flat_Lit_Toon_Dark_Thumb.png)
-  * Looks like a unlit shader under good neutral lighting, but actually responds to full ambient and realtime lighting information.
+  * Looks like a unlit shader under good neutral lighting, but actually responds to full ambient and realtime lighting information. Supports a mask for color tinting.
 * Simple Gradient Sky  
 ![alt text](Media/Simple_Gradient_Sky_thumb.png)
   * A simple procedural skybox that fades from a sky color to a horizon color
