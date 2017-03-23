@@ -7,10 +7,10 @@ Currently built for Unity 5.3.4p1 due to project constraints, but will be update
 
 ## Included Shaders
 * Unit Shadowed
-![alt text](media/Unlit_Shadowed.png)
+![alt text](Media/Unlit_Shadowed.png)
   * A simple unlit texture shader, has inputs for main color tint and shadow color tint.
 * Simple Gradient Sky
-![alt text](media/Simple_Gradient_Sky.png)
+![alt text](Media/Simple_Gradient_Sky.png)
   * A simple procedural skybox that fades from a sky color to a horizon color
 
 ## Notes
