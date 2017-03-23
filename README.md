@@ -19,4 +19,19 @@ Project contains the following assets:
 * <a href="http://unity-chan.com/">SD UnityChan</a>
 * <a href="http://u3d.as/9TS/">Instant Screenshot</a>
 
+## Tip Jar  
+<a href="https://digitaltipjar.com/cubedparadox?_external=true" class="dtj-tip-button" data-username="cubedparadox">
+  Digital Tip Jar
+</a>
+<script>
+  var a = document.querySelectorAll('.dtj-tip-button')[0];
+  var i = document.createElement('IFRAME');
+  i.setAttribute('src', "https://digitaltipjar.com/cubedparadox/widgets/tip?_external=true");
+  i.setAttribute('frameborder','0');
+  i.style.height = 70 +'px';
+  i.style.width = 120 +'px';
+  a.parentNode.insertBefore(i,a);
+  a.parentNode.removeChild(a);
+</script>
+
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
