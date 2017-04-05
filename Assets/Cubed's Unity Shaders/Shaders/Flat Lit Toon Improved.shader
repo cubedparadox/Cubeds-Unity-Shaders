@@ -8,9 +8,9 @@ Shader "CubedParadox/Flat Lit Toon Improved" {
         _MainTex ("MainTex", 2D) = "white" {}
         _Color ("Color", Color) = (1,1,1,1)
         _ColorMask ("ColorMask", 2D) = "black" {}
-        _Shadow ("Shadow", Range(0, 1)) = 0
+        _Shadow ("Shadow", Range(0, 1)) = 0.25
         _outline_width ("outline_width", Float ) = 0.003
-        _outline_tint ("outline_tint", Range(0, 1)) = 0
+        _outline_tint ("outline_tint", Range(0, 1)) = 0.6
     }
     SubShader {
         Tags {
