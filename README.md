@@ -12,7 +12,7 @@ Currently built for Unity 5.3.4p1 due to project constraints, but will be update
 * Flat Lit Toon  
 ![alt text](Media/Flat_Lit_Toon_Thumb.png) ![alt text](Media/Flat_Lit_Toon_Dark_Thumb.png)
   * Looks like a unlit shader under good neutral lighting, but actually responds to full ambient and realtime lighting information. Supports a mask for color tinting.
-* Flat Lit Toon Improved 
+* Flat Lit Toon Improved  
 ![alt text](Media/Flat_Lit_Toon_Improved.png)
   * An improved version of 'Flat Lit Toon' that shadows based on the ambient lighting. In addition, it also has a lit textured outline. Exposed: color mask, shadow intensity, outline width, outline tint.
 * Flat Lit Toon Outline  
