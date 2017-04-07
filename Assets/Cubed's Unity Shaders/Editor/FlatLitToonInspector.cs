@@ -14,6 +14,7 @@ public class FlatLitToonInspector : ShaderGUI
     MaterialProperty outlineTint;
     MaterialProperty emissionMap;
     MaterialProperty emissionColor;
+    MaterialProperty normalMap;
 
     public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
     {
@@ -26,6 +27,7 @@ public class FlatLitToonInspector : ShaderGUI
             outlineTint = FindProperty("_outline_tint", props);
             emissionMap = FindProperty("_EmissionMap", props);
             emissionColor = FindProperty("_EmissionColor", props);
+            normalMap = FindProperty("_BumpMap", props);
         }
 
         //m_MaterialEditor = materialEditor;
@@ -41,6 +43,7 @@ public class FlatLitToonInspector : ShaderGUI
                 EditorGUI.indentLevel += 2;
                 materialEditor.TexturePropertySingleLine(new GUIContent("Color Mask", "Masks Color Tinting (G)"), colorMask);
                 EditorGUI.indentLevel -= 2;
+                materialEditor.TexturePropertySingleLine(new GUIContent("Normal Map", "Normal Map (RGB)"), normalMap);
                 materialEditor.TexturePropertySingleLine(new GUIContent("Emission", "Emission (RGB)"), emissionMap, emissionColor);
                 EditorGUI.BeginChangeCheck();
                 materialEditor.TextureScaleOffsetProperty(mainTexture);
