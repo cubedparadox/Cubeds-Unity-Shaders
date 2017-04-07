@@ -3,7 +3,7 @@ Cubed's Unity Shaders
 
 A compilation of custom shaders for Unity3D.  
 **If you are upgrading from an older unitypackage, I recommend deleting the old 'Cubeds Unity Shaders' Folder first.**  
-**I've deprecated some old shader varients, if you're missing a shader, try switching to the new 'Flat Lit Toon' shader.**
+**I've deprecated some old shader varients, if you're missing a shader, try switching to the new 'Flat Lit Toon' shader.**  
 You can download the latest version of this package to import here: [CubedsShaders.unitypackage](https://github.com/cubedparadox/Cubeds-Unity-Shaders/raw/master/Packages/CubedsShaders.unitypackage)  
 Currently built for Unity 5.3.4p1 due to project constraints, but will be updated to 5.6.x at some point.
 
