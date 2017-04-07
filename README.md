@@ -11,10 +11,10 @@ Currently built for Unity 5.3.4p1 due to project constraints, but will be update
 * Flat Lit Toon  
 ![alt text](Media/Flat_Lit_Toon.png) ![alt text](Media/Flat_Lit_Toon_Inspector.png)
   * Looks like a unlit shader under good neutral lighting, but actually responds to full ambient and realtime lighting color, intensity and shadow.
-* Flat Lit Toon Rainbow  
 * Unlit Shadowed  
 ![alt text](Media/Unlit_Shadowed_thumb.png)
   * A simple unlit texture shader, has inputs for main color tint and shadow color tint.
+* Flat Lit Toon Rainbow  
 ![alt text](Media/Flat_Lit_Toon_Rainbow.gif)
   * An (old) version of 'Flat Lit Toon' with a cycling rainbow color. Hue and Saturation are exposed, Supports color mask.
 * Flat Lit Toon Distance Fade  
