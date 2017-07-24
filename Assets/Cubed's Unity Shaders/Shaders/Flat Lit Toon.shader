@@ -125,7 +125,7 @@ Shader "CubedParadox/Flat Lit Toon" {
                 float4 objPos = mul ( _Object2World, float4(0,0,0,1) );
                 o.posWorld = mul(_Object2World, v.vertex);
                 float3 lightColor = _LightColor0.rgb;
-                o.pos = mul(UNITY_MATRIX_MVP, float4(v.vertex.xyz + v.normal*_outline_width,1) );
+                o.pos = mul(UNITY_MATRIX_MVP, float4(v.vertex.xyz + normalize(v.normal)*_outline_width,1) );
                 UNITY_TRANSFER_FOG(o,o.pos);
                 TRANSFER_VERTEX_TO_FRAGMENT(o)
                 return o;
