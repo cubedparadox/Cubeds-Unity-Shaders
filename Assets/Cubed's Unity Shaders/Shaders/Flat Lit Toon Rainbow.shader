@@ -1,3 +1,6 @@
+// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 // Shader created with Shader Forge v1.27 
 // Shader Forge (c) Neat Corporation / Joachim Holmer - http://www.acegikmo.com/shaderforge/
 // Note: Manually altering this data may prevent you from opening it in Shader Forge
@@ -72,15 +75,15 @@ Shader "CubedParadox/Flat Lit Toon Rainbow" {
             VertexOutput vert (VertexInput v) {
                 VertexOutput o = (VertexOutput)0;
                 o.uv0 = v.texcoord0;
-                float4 objPos = mul ( _Object2World, float4(0,0,0,1) );
+                float4 objPos = mul ( unity_ObjectToWorld, float4(0,0,0,1) );
                 float3 lightColor = _LightColor0.rgb;
-                o.pos = mul(UNITY_MATRIX_MVP, v.vertex );
+                o.pos = UnityObjectToClipPos(v.vertex );
                 UNITY_TRANSFER_FOG(o,o.pos);
                 TRANSFER_VERTEX_TO_FRAGMENT(o)
                 return o;
             }
             float4 frag(VertexOutput i) : COLOR {
-                float4 objPos = mul ( _Object2World, float4(0,0,0,1) );
+                float4 objPos = mul ( unity_ObjectToWorld, float4(0,0,0,1) );
                 float3 lightColor = _LightColor0.rgb;
 ////// Lighting:
                 float attenuation = LIGHT_ATTENUATION(i);
@@ -142,15 +145,15 @@ Shader "CubedParadox/Flat Lit Toon Rainbow" {
             VertexOutput vert (VertexInput v) {
                 VertexOutput o = (VertexOutput)0;
                 o.uv0 = v.texcoord0;
-                float4 objPos = mul ( _Object2World, float4(0,0,0,1) );
+                float4 objPos = mul ( unity_ObjectToWorld, float4(0,0,0,1) );
                 float3 lightColor = _LightColor0.rgb;
-                o.pos = mul(UNITY_MATRIX_MVP, v.vertex );
+                o.pos = UnityObjectToClipPos(v.vertex );
                 UNITY_TRANSFER_FOG(o,o.pos);
                 TRANSFER_VERTEX_TO_FRAGMENT(o)
                 return o;
             }
             float4 frag(VertexOutput i) : COLOR {
-                float4 objPos = mul ( _Object2World, float4(0,0,0,1) );
+                float4 objPos = mul ( unity_ObjectToWorld, float4(0,0,0,1) );
                 float3 lightColor = _LightColor0.rgb;
 ////// Lighting:
                 float attenuation = LIGHT_ATTENUATION(i);
