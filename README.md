@@ -2,7 +2,6 @@ Cubed's Unity Shaders
 ============
 
 A compilation of custom shaders for Unity3D.  
-**If you are upgrading from an older unitypackage, I recommend deleting the old 'Cubed's Unity Shaders' Folder first.**  
 You can download the latest version of this package to import **here**: [CubedsShaders.unitypackage](https://github.com/cubedparadox/Cubeds-Unity-Shaders/raw/Unity_5_6/Packages/CubedsShaders.unitypackage)  
 Currently built for Unity 5.6.3p1
 
