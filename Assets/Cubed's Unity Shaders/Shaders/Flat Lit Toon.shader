@@ -102,7 +102,7 @@ Shader "CubedParadox/Flat Lit Toon" {
 				#if !DONT_OUTLINE
 				for (int i = 2; i >= 0; i--)
 				{
-					o.pos = UnityObjectToClipPos(IN[i].vertex + IN[i].normal * _outline_width);
+					o.pos = UnityObjectToClipPos(IN[i].vertex + normalize(IN[i].normal) * _outline_width);
 					o.uv0 = IN[i].uv0;
 					o.col = fixed4(_outline_tint, _outline_tint, _outline_tint, 1.);
 					o.posWorld = mul(unity_ObjectToWorld, IN[i].vertex);
@@ -265,7 +265,7 @@ Shader "CubedParadox/Flat Lit Toon" {
 				#if !DONT_OUTLINE
 				for (int i = 2; i >= 0; i--)
 				{
-					v.pos = UnityObjectToClipPos(IN[i].vertex + IN[i].normal * _outline_width);
+					v.pos = UnityObjectToClipPos(IN[i].vertex + normalize(IN[i].normal) * _outline_width);
 					v.uv0 = IN[i].uv0;
 					v.col = fixed4(_outline_tint, _outline_tint, _outline_tint, 1.);
 					v.posWorld = mul(unity_ObjectToWorld, IN[i].vertex);
@@ -273,7 +273,7 @@ Shader "CubedParadox/Flat Lit Toon" {
 					v.tangentDir = IN[i].tangentDir;
 					v.bitangentDir = IN[i].bitangentDir;
 					v.posWorld = mul(unity_ObjectToWorld, IN[i].vertex);
-                    v.vertex = float4(IN[i].vertex + IN[i].normal * _outline_width, 0);
+                    v.vertex = float4(IN[i].vertex + normalize(IN[i].normal) * _outline_width, 0);
 					TRANSFER_VERTEX_TO_FRAGMENT(v);
 					tristream.Append(v);
 				}
