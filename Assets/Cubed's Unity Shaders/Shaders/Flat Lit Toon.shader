@@ -225,6 +225,7 @@ Shader "CubedParadox/Flat Lit Toon" {
 				float3 tangentDir : TEXCOORD3;
 				float3 bitangentDir : TEXCOORD4;
                 float4 vertex : VERTEX_POS;
+                //vertex param is required for correct attentuation
 				fixed4 col : COLOR;
 				LIGHTING_COORDS(5, 6)
 					UNITY_FOG_COORDS(7)
@@ -262,6 +263,7 @@ Shader "CubedParadox/Flat Lit Toon" {
 			void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
 			{
 				VertexOutput v;
+				//using v here because TRANSFER_VERTEX_TO_FRAGMENT expects a v.vertex input
 				#if !DONT_OUTLINE
 				for (int i = 2; i >= 0; i--)
 				{
