@@ -8,7 +8,7 @@ Currently built for Unity 5.6.3p1
 ## Shaders
 * Flat Lit Toon  
 ![alt text](Media/Flat_Lit_Toon.png) ![alt text](Media/Flat_Lit_Toon_Inspector.png)
-  * Looks like a unlit shader under good neutral lighting, but actually responds to full ambient and realtime lighting color, intensity and shadow.
+  * Looks like a unlit shader under good neutral lighting, but actually responds to full ambient and realtime lighting color, intensity and shadow. Single Pass with geometry shader outline
 * Unlit Shadowed  
 ![alt text](Media/Unlit_Shadowed_thumb.png)
   * A simple unlit texture shader, has inputs for main color tint and shadow color tint.
