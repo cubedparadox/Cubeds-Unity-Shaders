@@ -23,6 +23,7 @@ Currently built for Unity 5.6.3p1
   * A simple procedural skybox that fades from a sky color to a horizon color
 
 ## Notes
+I've added an Amplify Shader Editor template! You can download it **here**: [FlatLitToonAmplifyTemplate.unitypackage](https://github.com/cubedparadox/Cubeds-Unity-Shaders/raw/master/Packages/FlatLitToonAmplifyTemplate.unitypackage)  
 Project contains the following assets:  
 * <a href="http://acegikmo.com/shaderforge/">ShaderForge</a> (gitignored)
 * <a href="http://unity-chan.com/">SD UnityChan</a>
