@@ -64,7 +64,7 @@ public class FlatLitToonInspector : ShaderGUI
                 if(!dontOutline)
                 {
                     materialEditor.ShaderProperty(outlineTint, "Tint", 2);
-                    materialEditor.ShaderProperty(outlineWidth, "Width", 2);
+                    materialEditor.ShaderProperty(outlineWidth, new GUIContent("Width", "Outline Width in cm"), 2);
                 }                
             }
             EditorGUI.EndChangeCheck();
