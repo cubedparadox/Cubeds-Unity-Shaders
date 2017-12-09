@@ -29,8 +29,7 @@ public class FlatLitToonInspector : ShaderGUI
             emissionColor = FindProperty("_EmissionColor", props);
             normalMap = FindProperty("_BumpMap", props);
         }
-
-        //m_MaterialEditor = materialEditor;
+        
         Material material = materialEditor.target as Material;
         
         { //Shader Properties GUI

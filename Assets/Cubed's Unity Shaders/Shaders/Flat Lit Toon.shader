@@ -9,7 +9,7 @@ Shader "CubedParadox/Flat Lit Toon"
 		_outline_width("outline_width", Float) = 0.002
 		_outline_tint("outline_tint", Range(0, 1)) = 0.5
 		_EmissionMap("Emission Map", 2D) = "white" {}
-		_EmissionColor("Emission Color", Color) = (0,0,0,1)
+		[HDR]_EmissionColor("Emission Color", Color) = (0,0,0,1)
 		_BumpMap("BumpMap", 2D) = "bump" {}
 		[HideInInspector]_Cutoff("Alpha cutoff", Range(0,1)) = 0.5
 	}
