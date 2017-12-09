@@ -7,6 +7,7 @@ Shader "CubedParadox/Flat Lit Toon"
 		_ColorMask("ColorMask", 2D) = "black" {}
 		_Shadow("Shadow", Range(0, 1)) = 0.4
 		_outline_width("outline_width", Float) = 0.2
+		_outline_color("outline_color", Color) = (0.5,0.5,0.5,1)
 		_outline_tint("outline_tint", Range(0, 1)) = 0.5
 		_EmissionMap("Emission Map", 2D) = "white" {}
 		[HDR]_EmissionColor("Emission Color", Color) = (0,0,0,1)
@@ -26,7 +27,7 @@ Shader "CubedParadox/Flat Lit Toon"
 	#pragma multi_compile_fog
 	#pragma only_renderers d3d9 d3d11 glcore gles 
 	#pragma target 4.0
-	#pragma shader_feature DONT_OUTLINE
+	#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
 
 	uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
 	uniform sampler2D _ColorMask; uniform float4 _ColorMask_ST;
@@ -86,18 +87,18 @@ Shader "CubedParadox/Flat Lit Toon"
 	}
 
 	float _outline_width;
-	float _outline_tint;
+	float4 _outline_color;
 
 	[maxvertexcount(6)]
 	void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
 	{
 		VertexOutput o;
-		#if !DONT_OUTLINE
+		#if !NO_OUTLINE
 		for (int i = 2; i >= 0; i--)
 		{
 			o.pos = UnityObjectToClipPos(IN[i].vertex + IN[i].normal * (_outline_width * .01));
 			o.uv0 = IN[i].uv0;
-			o.col = fixed4(_outline_tint, _outline_tint, _outline_tint, 1.);
+			o.col = fixed4( _outline_color.r, _outline_color.g, _outline_color.b, 1);
 			o.posWorld = mul(unity_ObjectToWorld, IN[i].vertex);
 			o.normalDir = UnityObjectToWorldNormal(IN[i].normal);
 			o.tangentDir = IN[i].tangentDir;
@@ -124,7 +125,7 @@ Shader "CubedParadox/Flat Lit Toon"
 		{
 			o.pos = UnityObjectToClipPos(IN[ii].vertex);
 			o.uv0 = IN[ii].uv0;
-			o.col = fixed4(1., 1., 1., 1.);
+			o.col = fixed4(1., 1., 1., 0.);
 			o.posWorld = mul(unity_ObjectToWorld, IN[ii].vertex);
 			o.normalDir = UnityObjectToWorldNormal(IN[ii].normal);
 			o.tangentDir = IN[ii].tangentDir;
@@ -188,6 +189,10 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 emissive = (_EmissionMap_var.rgb*_EmissionColor.rgb);
 				float4 _ColorMask_var = tex2D(_ColorMask,TRANSFORM_TEX(i.uv0, _ColorMask));
 				float3 baseColor = lerp((_MainTex_var.rgb*_Color.rgb),_MainTex_var.rgb,_ColorMask_var.r);
+				baseColor *= i.col;
+				#if COLORED_OUTLINE
+				if(i.col.a > .5) { baseColor = i.col; }
+				#endif
 
 				float3 reflectionMap = DecodeHDR(UNITY_SAMPLE_TEXCUBE_LOD(unity_SpecCube0, normalize((_WorldSpaceCameraPos - objPos.rgb)), 7), unity_SpecCube0_HDR)* 0.02;
 
@@ -203,7 +208,7 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 directLighting = saturate((ShadeSH9(half4(0.0, 1.0, 0.0, 1.0)) + reflectionMap + _LightColor0.rgb));
 				float3 directContribution = saturate((1.0 - _Shadow) + floor(saturate(remappedLight) * 2.0));
 				float3 finalColor = emissive + (baseColor * lerp(indirectLighting, directLighting, directContribution));
-				fixed4 finalRGBA = fixed4(finalColor, 1) * i.col;
+				fixed4 finalRGBA = fixed4(finalColor, 1);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}

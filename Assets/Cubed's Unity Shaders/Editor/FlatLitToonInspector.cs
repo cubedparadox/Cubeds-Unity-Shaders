@@ -6,15 +6,24 @@ using System;
 
 public class FlatLitToonInspector : ShaderGUI
 {
+
+    enum OutlineMode
+    {
+        None,
+        Tinted,
+        Colored
+    }
+
     MaterialProperty mainTexture;
     MaterialProperty color;
     MaterialProperty colorMask;
     MaterialProperty shadow;
     MaterialProperty outlineWidth;
-    MaterialProperty outlineTint;
+    MaterialProperty outlineColor;
     MaterialProperty emissionMap;
     MaterialProperty emissionColor;
     MaterialProperty normalMap;
+    OutlineMode outlineMode = OutlineMode.Tinted;
 
     public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
     {
@@ -24,18 +33,17 @@ public class FlatLitToonInspector : ShaderGUI
             colorMask = FindProperty("_ColorMask", props);
             shadow = FindProperty("_Shadow", props);
             outlineWidth = FindProperty("_outline_width", props);
-            outlineTint = FindProperty("_outline_tint", props);
+            outlineColor = FindProperty("_outline_color", props);
             emissionMap = FindProperty("_EmissionMap", props);
             emissionColor = FindProperty("_EmissionColor", props);
             normalMap = FindProperty("_BumpMap", props);
         }
         
         Material material = materialEditor.target as Material;
-        
+
         { //Shader Properties GUI
             EditorGUIUtility.labelWidth = 0f;
-
-            bool dontOutline = Array.IndexOf(material.shaderKeywords, "DONT_OUTLINE") != -1;
+            
             EditorGUI.BeginChangeCheck();
             {
                 materialEditor.TexturePropertySingleLine(new GUIContent("Main Texture", "Main Color Texture (RGB)"), mainTexture, color);
@@ -53,18 +61,41 @@ public class FlatLitToonInspector : ShaderGUI
                 materialEditor.ShaderProperty(shadow, "Shadow");
 
                 EditorGUI.BeginChangeCheck();
-                dontOutline = !EditorGUILayout.Toggle("Outline", !dontOutline);
+                outlineMode = (OutlineMode)EditorGUILayout.EnumPopup("Outline", outlineMode);
+                
                 if (EditorGUI.EndChangeCheck())
                 {
-                    if (dontOutline)
-                        material.EnableKeyword("DONT_OUTLINE");
-                    else
-                        material.DisableKeyword("DONT_OUTLINE");
+                    switch (outlineMode)
+                    {
+                        case OutlineMode.None:
+                            material.EnableKeyword("NO_OUTLINE");
+                            material.DisableKeyword("TINTED_OUTLINE");
+                            material.DisableKeyword("COLORED_OUTLINE");
+                            break;
+                        case OutlineMode.Tinted:
+                            material.DisableKeyword("NO_OUTLINE");
+                            material.EnableKeyword("TINTED_OUTLINE");
+                            material.DisableKeyword("COLORED_OUTLINE");
+                            break;
+                        case OutlineMode.Colored:
+                            material.DisableKeyword("NO_OUTLINE");
+                            material.DisableKeyword("TINTED_OUTLINE");
+                            material.EnableKeyword("COLORED_OUTLINE");
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                if(!dontOutline)
+                switch (outlineMode)
                 {
-                    materialEditor.ShaderProperty(outlineTint, "Tint", 2);
-                    materialEditor.ShaderProperty(outlineWidth, new GUIContent("Width", "Outline Width in cm"), 2);
+                    case OutlineMode.Tinted:
+                    case OutlineMode.Colored:
+                        materialEditor.ShaderProperty(outlineColor, "Color", 2);
+                        materialEditor.ShaderProperty(outlineWidth, new GUIContent("Width", "Outline Width in cm"), 2);
+                        break;
+                    case OutlineMode.None:
+                    default:
+                        break;
                 }                
             }
             EditorGUI.EndChangeCheck();
