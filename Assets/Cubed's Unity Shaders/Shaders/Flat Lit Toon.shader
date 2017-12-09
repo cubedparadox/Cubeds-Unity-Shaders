@@ -6,7 +6,7 @@ Shader "CubedParadox/Flat Lit Toon"
 		_Color("Color", Color) = (1,1,1,1)
 		_ColorMask("ColorMask", 2D) = "black" {}
 		_Shadow("Shadow", Range(0, 1)) = 0.4
-		_outline_width("outline_width", Float) = 0.002
+		_outline_width("outline_width", Float) = 0.2
 		_outline_tint("outline_tint", Range(0, 1)) = 0.5
 		_EmissionMap("Emission Map", 2D) = "white" {}
 		[HDR]_EmissionColor("Emission Color", Color) = (0,0,0,1)
@@ -95,7 +95,7 @@ Shader "CubedParadox/Flat Lit Toon"
 		#if !DONT_OUTLINE
 		for (int i = 2; i >= 0; i--)
 		{
-			o.pos = UnityObjectToClipPos(IN[i].vertex + IN[i].normal * _outline_width);
+			o.pos = UnityObjectToClipPos(IN[i].vertex + IN[i].normal * (_outline_width * .01));
 			o.uv0 = IN[i].uv0;
 			o.col = fixed4(_outline_tint, _outline_tint, _outline_tint, 1.);
 			o.posWorld = mul(unity_ObjectToWorld, IN[i].vertex);
