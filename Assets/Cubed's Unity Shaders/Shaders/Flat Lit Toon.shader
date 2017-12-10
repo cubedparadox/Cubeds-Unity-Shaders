@@ -12,155 +12,21 @@ Shader "CubedParadox/Flat Lit Toon"
 		_EmissionMap("Emission Map", 2D) = "white" {}
 		[HDR]_EmissionColor("Emission Color", Color) = (0,0,0,1)
 		_BumpMap("BumpMap", 2D) = "bump" {}
-		[HideInInspector]_Cutoff("Alpha cutoff", Range(0,1)) = 0.5
+		_Cutoff("Alpha cutoff", Range(0,1)) = 0.5
+
+		// Blending state
+		[HideInInspector] _Mode ("__mode", Float) = 0.0
+		[HideInInspector] _SrcBlend ("__src", Float) = 1.0
+		[HideInInspector] _DstBlend ("__dst", Float) = 0.0
+		[HideInInspector] _ZWrite ("__zw", Float) = 1.0
 	}
-
-		CGINCLUDE
-
-	#pragma vertex vert
-	#pragma fragment frag
-	#pragma geometry geom
-	#include "UnityCG.cginc"
-	#include "AutoLight.cginc"
-	#include "Lighting.cginc"
-
-	#pragma multi_compile_fog
-	#pragma only_renderers d3d9 d3d11 glcore gles 
-	#pragma target 4.0
-	#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
-
-	uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
-	uniform sampler2D _ColorMask; uniform float4 _ColorMask_ST;
-	uniform sampler2D _EmissionMap; uniform float4 _EmissionMap_ST;
-	uniform sampler2D _BumpMap; uniform float4 _BumpMap_ST;
-
-	uniform float4 _Color;
-	uniform float _Shadow;
-	uniform float4 _EmissionColor;
-
-	static const float3 grayscale_vector = float3(0, 0.3823529, 0.01845836);
-
-	struct VertexOutput
-	{
-		float4 pos : SV_POSITION;
-		float2 uv0 : TEXCOORD0;
-		float4 posWorld : TEXCOORD1;
-		float3 normalDir : TEXCOORD2;
-		float3 tangentDir : TEXCOORD3;
-		float3 bitangentDir : TEXCOORD4;
-		fixed4 col : COLOR;
-		SHADOW_COORDS(5)
-		UNITY_FOG_COORDS(6)
-	};
-
-	struct v2g
-	{
-		float4 vertex : POSITION;
-		float3 normal : NORMAL;
-		float4 tangent : TANGENT;
-		float2 uv0 : TEXCOORD0;
-		float4 posWorld : TEXCOORD1;
-		float3 normalDir : TEXCOORD2;
-		float3 tangentDir : TEXCOORD3;
-		float3 bitangentDir : TEXCOORD4;
-		float4 pos : CLIP_POS;
-		SHADOW_COORDS(5)
-		UNITY_FOG_COORDS(6)
-	};
-
-	v2g vert(appdata_tan v) {
-		v2g o;
-		o.uv0 = v.texcoord;
-		o.normal = v.normal;
-		o.tangent = v.tangent;
-		o.normalDir = UnityObjectToWorldNormal(v.normal);
-		o.tangentDir = normalize(mul(unity_ObjectToWorld, float4(v.tangent.xyz, 0.0)).xyz);
-		o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * v.tangent.w);
-		float4 objPos = mul(unity_ObjectToWorld, float4(0, 0, 0, 1));
-		o.posWorld = mul(unity_ObjectToWorld, v.vertex);
-		float3 lightColor = _LightColor0.rgb;
-		o.vertex = v.vertex;
-		o.pos = UnityObjectToClipPos(v.vertex);
-		TRANSFER_SHADOW(o);
-		UNITY_TRANSFER_FOG(o, o.pos);
-		return o;
-	}
-
-	float _outline_width;
-	float4 _outline_color;
-
-	[maxvertexcount(6)]
-	void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
-	{
-		VertexOutput o;
-		#if !NO_OUTLINE
-		for (int i = 2; i >= 0; i--)
-		{
-			o.pos = UnityObjectToClipPos(IN[i].vertex + IN[i].normal * (_outline_width * .01));
-			o.uv0 = IN[i].uv0;
-			o.col = fixed4( _outline_color.r, _outline_color.g, _outline_color.b, 1);
-			o.posWorld = mul(unity_ObjectToWorld, IN[i].vertex);
-			o.normalDir = UnityObjectToWorldNormal(IN[i].normal);
-			o.tangentDir = IN[i].tangentDir;
-			o.bitangentDir = IN[i].bitangentDir;
-			o.posWorld = mul(unity_ObjectToWorld, IN[i].vertex);
-
-			// Pass-through the shadow coordinates if this pass has shadows.
-			#if defined (SHADOWS_SCREEN) || ( defined (SHADOWS_DEPTH) && defined (SPOT) ) || defined (SHADOWS_CUBE)
-			o._ShadowCoord = IN[i]._ShadowCoord;
-			#endif
-
-			// Pass-through the fog coordinates if this pass has shadows.
-			#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-			o.fogCoord = IN[i].fogCoord;
-			#endif
-
-			tristream.Append(o);
-		}
-
-		tristream.RestartStrip();
-		#endif
-
-		for (int ii = 0; ii < 3; ii++)
-		{
-			o.pos = UnityObjectToClipPos(IN[ii].vertex);
-			o.uv0 = IN[ii].uv0;
-			o.col = fixed4(1., 1., 1., 0.);
-			o.posWorld = mul(unity_ObjectToWorld, IN[ii].vertex);
-			o.normalDir = UnityObjectToWorldNormal(IN[ii].normal);
-			o.tangentDir = IN[ii].tangentDir;
-			o.bitangentDir = IN[ii].bitangentDir;
-			o.posWorld = mul(unity_ObjectToWorld, IN[ii].vertex);
-
-			// Pass-through the shadow coordinates if this pass has shadows.
-			#if defined (SHADOWS_SCREEN) || ( defined (SHADOWS_DEPTH) && defined (SPOT) ) || defined (SHADOWS_CUBE)
-			o._ShadowCoord = IN[ii]._ShadowCoord;
-			#endif
-
-			// Pass-through the fog coordinates if this pass has shadows.
-			#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-			o.fogCoord = IN[ii].fogCoord;
-			#endif
-
-			tristream.Append(o);
-		}
-
-		tristream.RestartStrip();
-	}
-
-	float grayscaleSH9(float3 normalDirection)
-	{
-		return dot(ShadeSH9(half4(normalDirection, 1.0)), grayscale_vector);
-	}
-
-	ENDCG
 
 	SubShader
 	{
 		Tags
 		{
-		"Queue" = "AlphaTest"
-		"RenderType" = "TransparentCutout"
+			"Queue" = "AlphaTest"
+			"RenderType" = "TransparentCutout"
 		}
 
 		Pass
@@ -169,7 +35,17 @@ Shader "CubedParadox/Flat Lit Toon"
 			Name "FORWARD"
 			Tags { "LightMode" = "ForwardBase" }
 
+			Blend [_SrcBlend] [_DstBlend]
+			ZWrite [_ZWrite]
+
 			CGPROGRAM
+			#include "FlatLitToonCore.cginc"
+			#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
+			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
+			#pragma vertex vert
+			#pragma geometry geom
+			#pragma fragment frag
+
 			#pragma multi_compile_fwdbase_fullshadows
 
 			float4 frag(VertexOutput i) : COLOR
@@ -180,7 +56,7 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 _BumpMap_var = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(i.uv0, _BumpMap)));
 				float3 normalDirection = normalize(mul(_BumpMap_var.rgb, tangentTransform)); // Perturbed normals
 				float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
-				clip(_MainTex_var.a - 0.5);
+				
 				float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
 				float3 lightColor = _LightColor0.rgb;
 				UNITY_LIGHT_ATTENUATION(attenuation, i, i.posWorld.xyz);
@@ -188,11 +64,16 @@ Shader "CubedParadox/Flat Lit Toon"
 				float4 _EmissionMap_var = tex2D(_EmissionMap,TRANSFORM_TEX(i.uv0, _EmissionMap));
 				float3 emissive = (_EmissionMap_var.rgb*_EmissionColor.rgb);
 				float4 _ColorMask_var = tex2D(_ColorMask,TRANSFORM_TEX(i.uv0, _ColorMask));
-				float3 baseColor = lerp((_MainTex_var.rgb*_Color.rgb),_MainTex_var.rgb,_ColorMask_var.r);
-				baseColor *= i.col;
+				float4 baseColor = lerp((_MainTex_var.rgba*_Color.rgba),_MainTex_var.rgba,_ColorMask_var.r);
+				baseColor *= float4(i.col.rgb, 1);
+
 				#if COLORED_OUTLINE
 				if(i.col.a > .5) { baseColor = i.col; }
 				#endif
+
+				#if defined(_ALPHATEST_ON)
+        		clip (baseColor.a - _Cutoff);
+    			#endif
 
 				float3 reflectionMap = DecodeHDR(UNITY_SAMPLE_TEXCUBE_LOD(unity_SpecCube0, normalize((_WorldSpaceCameraPos - objPos.rgb)), 7), unity_SpecCube0_HDR)* 0.02;
 
@@ -208,7 +89,7 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 directLighting = saturate((ShadeSH9(half4(0.0, 1.0, 0.0, 1.0)) + reflectionMap + _LightColor0.rgb));
 				float3 directContribution = saturate((1.0 - _Shadow) + floor(saturate(remappedLight) * 2.0));
 				float3 finalColor = emissive + (baseColor * lerp(indirectLighting, directLighting, directContribution));
-				fixed4 finalRGBA = fixed4(finalColor, 1);
+				fixed4 finalRGBA = fixed4(finalColor, baseColor.a);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
@@ -219,10 +100,17 @@ Shader "CubedParadox/Flat Lit Toon"
 		{
 			Name "FORWARD_DELTA"
 			Tags { "LightMode" = "ForwardAdd" }
-			Blend One One
+			Blend [_SrcBlend] One
 
 			CGPROGRAM
-			#pragma multi_compile_fwdadd_fullshadows
+			#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
+			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
+			#include "FlatLitToonCore.cginc"
+			#pragma vertex vert
+			#pragma geometry geom
+			#pragma fragment frag
+
+			#pragma multi_compile_fwdadd
 
 			float4 frag(VertexOutput i) : COLOR
 			{
@@ -232,13 +120,23 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 _BumpMap_var = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(i.uv0, _BumpMap)));
 				float3 normalDirection = normalize(mul(_BumpMap_var.rgb, tangentTransform)); // Perturbed normals
 				float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
-				clip(_MainTex_var.a - 0.5);
+
 				float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
 				float3 lightColor = _LightColor0.rgb;
 				UNITY_LIGHT_ATTENUATION(attenuation, i, i.posWorld.xyz);
 	
 				float4 _ColorMask_var = tex2D(_ColorMask,TRANSFORM_TEX(i.uv0, _ColorMask));
-				float3 baseColor = lerp((_MainTex_var.rgb*_Color.rgb),_MainTex_var.rgb,_ColorMask_var.r);
+				float4 baseColor = lerp((_MainTex_var.rgba*_Color.rgba),_MainTex_var.rgba,_ColorMask_var.r);
+				baseColor *= float4(i.col.rgb, 1);
+
+				#if COLORED_OUTLINE
+				if(i.col.a > .5) { baseColor = i.col; }
+				#endif
+
+				#if defined(_ALPHATEST_ON)
+        		clip (baseColor.a - _Cutoff);
+    			#endif
+
 				float lightContribution = dot(normalize(_WorldSpaceLightPos0.xyz - i.posWorld.xyz),normalDirection)*attenuation;
 				float3 directContribution = floor(saturate(lightContribution) * 2.0);
 				float3 finalColor = baseColor * lerp(0, _LightColor0.rgb, saturate(directContribution + ((1 - _Shadow) * attenuation)));
@@ -246,6 +144,21 @@ Shader "CubedParadox/Flat Lit Toon"
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
+			ENDCG
+		}
+
+		Pass
+		{
+			Name "SHADOW_CASTER"
+			Tags{ "LightMode" = "ShadowCaster" }
+
+			ZWrite On ZTest LEqual
+
+			CGPROGRAM
+			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
+			#include "FlatLitToonShadows.cginc"
+			#pragma vertex vertShadowCaster
+			#pragma fragment fragShadowCaster
 			ENDCG
 		}
 	}
