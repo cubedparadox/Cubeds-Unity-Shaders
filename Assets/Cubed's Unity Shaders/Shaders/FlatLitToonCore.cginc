@@ -25,13 +25,14 @@ struct VertexOutput
 {
 	float4 pos : SV_POSITION;
 	float2 uv0 : TEXCOORD0;
-	float4 posWorld : TEXCOORD1;
-	float3 normalDir : TEXCOORD2;
-	float3 tangentDir : TEXCOORD3;
-	float3 bitangentDir : TEXCOORD4;
+	float2 uv1 : TEXCOORD1;
+	float4 posWorld : TEXCOORD2;
+	float3 normalDir : TEXCOORD3;
+	float3 tangentDir : TEXCOORD4;
+	float3 bitangentDir : TEXCOORD5;
 	fixed4 col : COLOR;
-	SHADOW_COORDS(5)
-	UNITY_FOG_COORDS(6)
+	SHADOW_COORDS(6)
+	UNITY_FOG_COORDS(7)
 };
 
 struct v2g
@@ -40,18 +41,20 @@ struct v2g
 	float3 normal : NORMAL;
 	float4 tangent : TANGENT;
 	float2 uv0 : TEXCOORD0;
-	float4 posWorld : TEXCOORD1;
-	float3 normalDir : TEXCOORD2;
-	float3 tangentDir : TEXCOORD3;
-	float3 bitangentDir : TEXCOORD4;
+	float2 uv1 : TEXCOORD1;
+	float4 posWorld : TEXCOORD2;
+	float3 normalDir : TEXCOORD3;
+	float3 tangentDir : TEXCOORD4;
+	float3 bitangentDir : TEXCOORD5;
 	float4 pos : CLIP_POS;
-	SHADOW_COORDS(5)
-	UNITY_FOG_COORDS(6)
+	SHADOW_COORDS(6)
+	UNITY_FOG_COORDS(7)
 };
 
-v2g vert(appdata_tan v) {
+v2g vert(appdata_full v) {
 	v2g o;
 	o.uv0 = v.texcoord;
+	o.uv1 = v.texcoord1;
 	o.normal = v.normal;
 	o.tangent = v.tangent;
 	o.normalDir = UnityObjectToWorldNormal(v.normal);
@@ -79,6 +82,7 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
 	{
 		o.pos = UnityObjectToClipPos(IN[i].vertex + IN[i].normal * (_outline_width * .01));
 		o.uv0 = IN[i].uv0;
+		o.uv1 = IN[i].uv1;
 		o.col = fixed4( _outline_color.r, _outline_color.g, _outline_color.b, 1);
 		o.posWorld = mul(unity_ObjectToWorld, IN[i].vertex);
 		o.normalDir = UnityObjectToWorldNormal(IN[i].normal);
@@ -106,6 +110,7 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
 	{
 		o.pos = UnityObjectToClipPos(IN[ii].vertex);
 		o.uv0 = IN[ii].uv0;
+		o.uv1 = IN[ii].uv1;
 		o.col = fixed4(1., 1., 1., 0.);
 		o.posWorld = mul(unity_ObjectToWorld, IN[ii].vertex);
 		o.normalDir = UnityObjectToWorldNormal(IN[ii].normal);

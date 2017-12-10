@@ -25,8 +25,7 @@ Shader "CubedParadox/Flat Lit Toon"
 	{
 		Tags
 		{
-			"Queue" = "AlphaTest"
-			"RenderType" = "TransparentCutout"
+			"RenderType" = "Opaque"
 		}
 
 		Pass
@@ -77,6 +76,11 @@ Shader "CubedParadox/Flat Lit Toon"
 				#if defined(_ALPHATEST_ON)
         		clip (baseColor.a - _Cutoff);
     			#endif
+				
+				float3 lightmap = float4(1.0,1.0,1.0,1.0);
+				#ifdef LIGHTMAP_ON
+				lightmap = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv1 * unity_LightmapST.xy + unity_LightmapST.zw));
+				#endif
 
 				float3 reflectionMap = DecodeHDR(UNITY_SAMPLE_TEXCUBE_LOD(unity_SpecCube0, normalize((_WorldSpaceCameraPos - objPos.rgb)), 7), unity_SpecCube0_HDR)* 0.02;
 
@@ -92,7 +96,7 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 directLighting = saturate((ShadeSH9(half4(0.0, 1.0, 0.0, 1.0)) + reflectionMap + _LightColor0.rgb));
 				float3 directContribution = saturate((1.0 - _Shadow) + floor(saturate(remappedLight) * 2.0));
 				float3 finalColor = emissive + (baseColor * lerp(indirectLighting, directLighting, directContribution));
-				fixed4 finalRGBA = fixed4(finalColor, baseColor.a);
+				fixed4 finalRGBA = fixed4(finalColor * lightmap, baseColor.a);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
