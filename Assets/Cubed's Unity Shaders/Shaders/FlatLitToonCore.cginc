@@ -57,7 +57,7 @@ v2g vert(appdata_full v) {
 	o.uv1 = v.texcoord1;
 	o.normal = v.normal;
 	o.tangent = v.tangent;
-	o.normalDir = UnityObjectToWorldNormal(v.normal);
+	o.normalDir = normalize(UnityObjectToWorldNormal(v.normal));
 	o.tangentDir = normalize(mul(unity_ObjectToWorld, float4(v.tangent.xyz, 0.0)).xyz);
 	o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * v.tangent.w);
 	float4 objPos = mul(unity_ObjectToWorld, float4(0, 0, 0, 1));
@@ -80,7 +80,7 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
 	#if !NO_OUTLINE
 	for (int i = 2; i >= 0; i--)
 	{
-		o.pos = UnityObjectToClipPos(IN[i].vertex + IN[i].normal * (_outline_width * .01));
+		o.pos = UnityObjectToClipPos(IN[i].vertex + normalize(IN[i].normal) * (_outline_width * .01));
 		o.uv0 = IN[i].uv0;
 		o.uv1 = IN[i].uv1;
 		o.col = fixed4( _outline_color.r, _outline_color.g, _outline_color.b, 1);
