@@ -13,6 +13,7 @@ Shader "CubedParadox/Flat Lit Toon"
 		[HDR]_EmissionColor("Emission Color", Color) = (0,0,0,1)
 		_BumpMap("BumpMap", 2D) = "bump" {}
 		_Cutoff("Alpha cutoff", Range(0,1)) = 0.5
+		_MipScale("Mip Level Alpha Scale", Range(0,1)) = 0.25
 
 		// Blending state
 		[HideInInspector] _Mode ("__mode", Float) = 0.0
@@ -33,6 +34,7 @@ Shader "CubedParadox/Flat Lit Toon"
 
 			Name "FORWARD"
 			Tags { "LightMode" = "ForwardBase" }
+			AlphaToMask On
 
 			Blend [_SrcBlend] [_DstBlend]
 			ZWrite [_ZWrite]
@@ -67,14 +69,20 @@ Shader "CubedParadox/Flat Lit Toon"
 				baseColor *= float4(i.col.rgb, 1);
 
 				#if COLORED_OUTLINE
-				if(i.col.a > .5) 
+				if(i.outline)
 				{
 					baseColor.rgb = i.col.rgb; 
 				}
 				#endif
 
 				#if defined(_ALPHATEST_ON)
-        		clip (baseColor.a - _Cutoff);
+
+				// rescale alpha by mip level (if not using preserved coverage mip maps)
+				baseColor.a *= 1 + max(0, CalcMipLevel(i.uv0 * _MainTex_TexelSize.zw)) * _MipScale;
+				// rescale alpha by partial derivative
+				baseColor.a = (baseColor.a - _Cutoff) / max(fwidth(baseColor.a), 0.0001) + 0.5;
+
+				clip(baseColor.a);
     			#endif
 				
 				float3 lightmap = float4(1.0,1.0,1.0,1.0);
@@ -108,6 +116,7 @@ Shader "CubedParadox/Flat Lit Toon"
 			Name "FORWARD_DELTA"
 			Tags { "LightMode" = "ForwardAdd" }
 			Blend [_SrcBlend] One
+			AlphaToMask On
 
 			CGPROGRAM
 			#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
@@ -137,11 +146,19 @@ Shader "CubedParadox/Flat Lit Toon"
 				baseColor *= float4(i.col.rgb, 1);
 
 				#if COLORED_OUTLINE
-				if(i.col.a > .5) { baseColor = i.col; }
+				if (i.outline)
+				{
+					baseColor.rgb = i.col.rgb;
+				}
 				#endif
 
 				#if defined(_ALPHATEST_ON)
-        		clip (baseColor.a - _Cutoff);
+				// rescale alpha by mip level (if not using preserved coverage mip maps)
+				baseColor.a *= 1 + max(0, CalcMipLevel(i.uv0 * _MainTex_TexelSize.zw)) * _MipScale;
+				// rescale alpha by partial derivative
+				baseColor.a = (baseColor.a - _Cutoff) / max(fwidth(baseColor.a), 0.0001) + 0.5;
+
+				clip (baseColor.a);
     			#endif
 
 				float lightContribution = dot(normalize(_WorldSpaceLightPos0.xyz - i.posWorld.xyz),normalDirection)*attenuation;

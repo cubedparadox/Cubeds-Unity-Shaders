@@ -9,7 +9,7 @@
 #pragma target 4.0
 //#pragma addshadow
 
-uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
+uniform sampler2D _MainTex; uniform float4 _MainTex_ST; float4 _MainTex_TexelSize;
 uniform sampler2D _ColorMask; uniform float4 _ColorMask_ST;
 uniform sampler2D _EmissionMap; uniform float4 _EmissionMap_ST;
 uniform sampler2D _BumpMap; uniform float4 _BumpMap_ST;
@@ -17,23 +17,10 @@ uniform sampler2D _BumpMap; uniform float4 _BumpMap_ST;
 uniform float4 _Color;
 uniform float _Shadow;
 uniform float _Cutoff;
+uniform float _MipScale;
 uniform float4 _EmissionColor;
 
 static const float3 grayscale_vector = float3(0, 0.3823529, 0.01845836);
-
-struct VertexOutput
-{
-	float4 pos : SV_POSITION;
-	float2 uv0 : TEXCOORD0;
-	float2 uv1 : TEXCOORD1;
-	float4 posWorld : TEXCOORD2;
-	float3 normalDir : TEXCOORD3;
-	float3 tangentDir : TEXCOORD4;
-	float3 bitangentDir : TEXCOORD5;
-	fixed4 col : COLOR;
-	SHADOW_COORDS(6)
-	UNITY_FOG_COORDS(7)
-};
 
 struct v2g
 {
@@ -47,6 +34,21 @@ struct v2g
 	float3 tangentDir : TEXCOORD4;
 	float3 bitangentDir : TEXCOORD5;
 	float4 pos : CLIP_POS;
+	SHADOW_COORDS(6)
+	UNITY_FOG_COORDS(7)
+};
+
+struct VertexOutput
+{
+	float4 pos : SV_POSITION;
+	float2 uv0 : TEXCOORD0;
+	float2 uv1 : TEXCOORD1;
+	float4 posWorld : TEXCOORD2;
+	float3 normalDir : TEXCOORD3;
+	float3 tangentDir : TEXCOORD4;
+	float3 bitangentDir : TEXCOORD5;
+	fixed4 col : COLOR;
+	bool outline : OUTLINE;
 	SHADOW_COORDS(6)
 	UNITY_FOG_COORDS(7)
 };
@@ -89,6 +91,7 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
 		o.tangentDir = IN[i].tangentDir;
 		o.bitangentDir = IN[i].bitangentDir;
 		o.posWorld = mul(unity_ObjectToWorld, IN[i].vertex);
+		o.outline = true;
 
 		// Pass-through the shadow coordinates if this pass has shadows.
 		#if defined (SHADOWS_SCREEN) || ( defined (SHADOWS_DEPTH) && defined (SPOT) ) || defined (SHADOWS_CUBE)
@@ -117,6 +120,7 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
 		o.tangentDir = IN[ii].tangentDir;
 		o.bitangentDir = IN[ii].bitangentDir;
 		o.posWorld = mul(unity_ObjectToWorld, IN[ii].vertex);
+		o.outline = false;
 
 		// Pass-through the shadow coordinates if this pass has shadows.
 		#if defined (SHADOWS_SCREEN) || ( defined (SHADOWS_DEPTH) && defined (SPOT) ) || defined (SHADOWS_CUBE)
@@ -137,6 +141,15 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
 float grayscaleSH9(float3 normalDirection)
 {
 	return dot(ShadeSH9(half4(normalDirection, 1.0)), grayscale_vector);
+}
+
+float CalcMipLevel(float2 texture_coord)
+{
+	float2 dx = ddx(texture_coord);
+	float2 dy = ddy(texture_coord);
+	float delta_max_sqr = max(dot(dx, dx), dot(dy, dy));
+
+	return max(0.0, 0.5 * log2(delta_max_sqr));
 }
 
 #endif
