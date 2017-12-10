@@ -16,6 +16,7 @@ Shader "CubedParadox/Flat Lit Toon"
 
 		// Blending state
 		[HideInInspector] _Mode ("__mode", Float) = 0.0
+		[HideInInspector] _OutlineMode("__outline_mode", Float) = 0.0
 		[HideInInspector] _SrcBlend ("__src", Float) = 1.0
 		[HideInInspector] _DstBlend ("__dst", Float) = 0.0
 		[HideInInspector] _ZWrite ("__zw", Float) = 1.0

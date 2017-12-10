@@ -7,7 +7,7 @@ using System;
 public class FlatLitToonInspector : ShaderGUI
 {
 
-    enum OutlineMode
+    public enum OutlineMode
     {
         None,
         Tinted,
@@ -27,13 +27,13 @@ public class FlatLitToonInspector : ShaderGUI
     MaterialProperty color;
     MaterialProperty colorMask;
     MaterialProperty shadow;
+    MaterialProperty outlineMode;
     MaterialProperty outlineWidth;
     MaterialProperty outlineColor;
     MaterialProperty emissionMap;
     MaterialProperty emissionColor;
     MaterialProperty normalMap;
     MaterialProperty alphaCutoff;
-    OutlineMode outlineMode = OutlineMode.Tinted;
 
     public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
     {
@@ -43,6 +43,7 @@ public class FlatLitToonInspector : ShaderGUI
             color = FindProperty("_Color", props);
             colorMask = FindProperty("_ColorMask", props);
             shadow = FindProperty("_Shadow", props);
+            outlineMode = FindProperty("_OutlineMode", props);
             outlineWidth = FindProperty("_outline_width", props);
             outlineColor = FindProperty("_outline_color", props);
             emissionMap = FindProperty("_EmissionMap", props);
@@ -59,57 +60,18 @@ public class FlatLitToonInspector : ShaderGUI
             EditorGUI.BeginChangeCheck();
             {
                 EditorGUI.showMixedValue = blendMode.hasMixedValue;
-                var mode = (BlendMode)blendMode.floatValue;
+                var bMode = (BlendMode)blendMode.floatValue;
 
                 EditorGUI.BeginChangeCheck();
-                mode = (BlendMode)EditorGUILayout.Popup("Rendering Mode", (int)mode, Enum.GetNames(typeof(BlendMode)));
+                bMode = (BlendMode)EditorGUILayout.Popup("Rendering Mode", (int)bMode, Enum.GetNames(typeof(BlendMode)));
                 if (EditorGUI.EndChangeCheck())
                 {
                     materialEditor.RegisterPropertyChangeUndo("Rendering Mode");
-                    blendMode.floatValue = (float)mode;
+                    blendMode.floatValue = (float)bMode;
 
-                    switch ((BlendMode)material.GetFloat("_Mode"))
+                    foreach (var obj in blendMode.targets)
                     {
-                        case BlendMode.Opaque:
-                            material.SetOverrideTag("RenderType", "");
-                            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                            material.SetInt("_ZWrite", 1);
-                            material.DisableKeyword("_ALPHATEST_ON");
-                            material.DisableKeyword("_ALPHABLEND_ON");
-                            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                            material.renderQueue = -1;
-                            break;
-                        case BlendMode.Cutout:
-                            material.SetOverrideTag("RenderType", "TransparentCutout");
-                            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                            material.SetInt("_ZWrite", 1);
-                            material.EnableKeyword("_ALPHATEST_ON");
-                            material.DisableKeyword("_ALPHABLEND_ON");
-                            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
-                            break;
-                        case BlendMode.Fade:
-                            material.SetOverrideTag("RenderType", "Transparent");
-                            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                            material.SetInt("_ZWrite", 0);
-                            material.DisableKeyword("_ALPHATEST_ON");
-                            material.EnableKeyword("_ALPHABLEND_ON");
-                            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-                            break;
-                        case BlendMode.Transparent:
-                            material.SetOverrideTag("RenderType", "Transparent");
-                            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                            material.SetInt("_ZWrite", 0);
-                            material.DisableKeyword("_ALPHATEST_ON");
-                            material.DisableKeyword("_ALPHABLEND_ON");
-                            material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
-                            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-                            break;
+                        SetupMaterialWithBlendMode((Material)obj, (BlendMode)material.GetFloat("_Mode"));
                     }
                 }
 
@@ -132,33 +94,23 @@ public class FlatLitToonInspector : ShaderGUI
                 EditorGUILayout.Space();
                 materialEditor.ShaderProperty(shadow, "Shadow");
 
+                var oMode = (OutlineMode)outlineMode.floatValue;
+
                 EditorGUI.BeginChangeCheck();
-                outlineMode = (OutlineMode)EditorGUILayout.EnumPopup("Outline", outlineMode);
+                oMode = (OutlineMode)EditorGUILayout.Popup("Outline Mode", (int)oMode, Enum.GetNames(typeof(OutlineMode)));
                 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    switch (outlineMode)
+                    materialEditor.RegisterPropertyChangeUndo("Outline Mode");
+                    outlineMode.floatValue = (float)oMode;
+
+                    foreach (var obj in outlineMode.targets)
                     {
-                        case OutlineMode.None:
-                            material.EnableKeyword("NO_OUTLINE");
-                            material.DisableKeyword("TINTED_OUTLINE");
-                            material.DisableKeyword("COLORED_OUTLINE");
-                            break;
-                        case OutlineMode.Tinted:
-                            material.DisableKeyword("NO_OUTLINE");
-                            material.EnableKeyword("TINTED_OUTLINE");
-                            material.DisableKeyword("COLORED_OUTLINE");
-                            break;
-                        case OutlineMode.Colored:
-                            material.DisableKeyword("NO_OUTLINE");
-                            material.DisableKeyword("TINTED_OUTLINE");
-                            material.EnableKeyword("COLORED_OUTLINE");
-                            break;
-                        default:
-                            break;
+                        SetupMaterialWithOutlineMode((Material)obj, (OutlineMode)material.GetFloat("_OutlineMode"));
                     }
+
                 }
-                switch (outlineMode)
+                switch (oMode)
                 {
                     case OutlineMode.Tinted:
                     case OutlineMode.Colored:
@@ -174,5 +126,75 @@ public class FlatLitToonInspector : ShaderGUI
         }
 
     }
-    
+
+    public static void SetupMaterialWithBlendMode(Material material, BlendMode blendMode)
+    {
+        switch ((BlendMode)material.GetFloat("_Mode"))
+        {
+            case BlendMode.Opaque:
+                material.SetOverrideTag("RenderType", "");
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                material.SetInt("_ZWrite", 1);
+                material.DisableKeyword("_ALPHATEST_ON");
+                material.DisableKeyword("_ALPHABLEND_ON");
+                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = -1;
+                break;
+            case BlendMode.Cutout:
+                material.SetOverrideTag("RenderType", "TransparentCutout");
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                material.SetInt("_ZWrite", 1);
+                material.EnableKeyword("_ALPHATEST_ON");
+                material.DisableKeyword("_ALPHABLEND_ON");
+                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+                break;
+            case BlendMode.Fade:
+                material.SetOverrideTag("RenderType", "Transparent");
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                material.SetInt("_ZWrite", 0);
+                material.DisableKeyword("_ALPHATEST_ON");
+                material.EnableKeyword("_ALPHABLEND_ON");
+                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                break;
+            case BlendMode.Transparent:
+                material.SetOverrideTag("RenderType", "Transparent");
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                material.SetInt("_ZWrite", 0);
+                material.DisableKeyword("_ALPHATEST_ON");
+                material.DisableKeyword("_ALPHABLEND_ON");
+                material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                break;
+        }
+    }
+
+    public static void SetupMaterialWithOutlineMode(Material material, OutlineMode outlineMode)
+    {
+        switch ((OutlineMode)material.GetFloat("_OutlineMode"))
+        {
+            case OutlineMode.None:
+                material.EnableKeyword("NO_OUTLINE");
+                material.DisableKeyword("TINTED_OUTLINE");
+                material.DisableKeyword("COLORED_OUTLINE");
+                break;
+            case OutlineMode.Tinted:
+                material.DisableKeyword("NO_OUTLINE");
+                material.EnableKeyword("TINTED_OUTLINE");
+                material.DisableKeyword("COLORED_OUTLINE");
+                break;
+            case OutlineMode.Colored:
+                material.DisableKeyword("NO_OUTLINE");
+                material.DisableKeyword("TINTED_OUTLINE");
+                material.EnableKeyword("COLORED_OUTLINE");
+                break;
+            default:
+                break;
+        }
+    }
 }
