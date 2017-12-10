@@ -76,13 +76,10 @@ Shader "CubedParadox/Flat Lit Toon"
 				#endif
 
 				#if defined(_ALPHATEST_ON)
-
 				// rescale alpha by mip level (if not using preserved coverage mip maps)
 				baseColor.a *= 1 + max(0, CalcMipLevel(i.uv0 * _MainTex_TexelSize.zw)) * _MipScale;
 				// rescale alpha by partial derivative
 				baseColor.a = (baseColor.a - _Cutoff) / max(fwidth(baseColor.a), 0.0001) + 0.5;
-
-				clip(baseColor.a);
     			#endif
 				
 				float3 lightmap = float4(1.0,1.0,1.0,1.0);
@@ -157,9 +154,7 @@ Shader "CubedParadox/Flat Lit Toon"
 				baseColor.a *= 1 + max(0, CalcMipLevel(i.uv0 * _MainTex_TexelSize.zw)) * _MipScale;
 				// rescale alpha by partial derivative
 				baseColor.a = (baseColor.a - _Cutoff) / max(fwidth(baseColor.a), 0.0001) + 0.5;
-
-				clip (baseColor.a);
-    			#endif
+				#endif
 
 				float lightContribution = dot(normalize(_WorldSpaceLightPos0.xyz - i.posWorld.xyz),normalDirection)*attenuation;
 				float3 directContribution = floor(saturate(lightContribution) * 2.0);
