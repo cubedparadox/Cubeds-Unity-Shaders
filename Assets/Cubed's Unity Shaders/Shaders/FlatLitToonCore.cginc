@@ -1,3 +1,5 @@
+#ifndef FLAT_LIT_TOON_CORE_INCLUDED
+
 #include "UnityCG.cginc"
 #include "AutoLight.cginc"
 #include "Lighting.cginc"
@@ -131,3 +133,5 @@ float grayscaleSH9(float3 normalDirection)
 {
 	return dot(ShadeSH9(half4(normalDirection, 1.0)), grayscale_vector);
 }
+
+#endif
