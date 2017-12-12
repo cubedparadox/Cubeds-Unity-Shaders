@@ -100,11 +100,6 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 finalColor = emissive + (baseColor * lerp(indirectLighting, directLighting, directContribution));
 				
 				fixed4 finalRGBA = fixed4(finalColor * lightmap, baseColor.a);
-				// The fix for the cracks was to draw the original triangles twice.
-				// Somehow this removes the cracks but it also causes everything to be twice as bright.
-				if (!i.is_outline) {
-					finalRGBA = finalRGBA / 2.0;
-				}
 
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
