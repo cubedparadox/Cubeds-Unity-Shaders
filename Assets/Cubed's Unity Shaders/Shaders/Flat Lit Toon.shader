@@ -98,7 +98,14 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 directLighting = saturate((ShadeSH9(half4(0.0, 1.0, 0.0, 1.0)) + reflectionMap + _LightColor0.rgb));
 				float3 directContribution = saturate((1.0 - _Shadow) + floor(saturate(remappedLight) * 2.0));
 				float3 finalColor = emissive + (baseColor * lerp(indirectLighting, directLighting, directContribution));
+				
 				fixed4 finalRGBA = fixed4(finalColor * lightmap, baseColor.a);
+				// The fix for the cracks was to draw the original triangles twice.
+				// Somehow this removes the cracks but it also causes everything to be twice as bright.
+				if (!i.is_outline) {
+					finalRGBA = finalRGBA / 2.0;
+				}
+
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
@@ -153,6 +160,13 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 directContribution = floor(saturate(lightContribution) * 2.0);
 				float3 finalColor = baseColor * lerp(0, _LightColor0.rgb, saturate(directContribution + ((1 - _Shadow) * attenuation)));
 				fixed4 finalRGBA = fixed4(finalColor,1) * i.col;
+
+				// The fix for the cracks was to draw the original triangles twice.
+				// Somehow this removes the cracks but it also causes everything to be twice as bright.
+				if (!i.is_outline) {
+					finalRGBA = finalRGBA / 2.0;
+				}
+
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
