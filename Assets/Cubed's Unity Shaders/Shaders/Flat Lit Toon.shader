@@ -118,7 +118,7 @@ Shader "CubedParadox/Flat Lit Toon"
 			#pragma geometry geom
 			#pragma fragment frag
 
-			#pragma multi_compile_fwdadd
+			#pragma multi_compile_fwdadd_fullshadows
 
 			float4 frag(VertexOutput i) : COLOR
 			{
