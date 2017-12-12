@@ -69,7 +69,7 @@ Shader "CubedParadox/Flat Lit Toon"
 				baseColor *= float4(i.col.rgb, 1);
 
 				#if COLORED_OUTLINE
-				if(i.col.a > .5) 
+				if(i.is_outline) 
 				{
 					baseColor.rgb = i.col.rgb; 
 				}
