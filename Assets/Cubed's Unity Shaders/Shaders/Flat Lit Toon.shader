@@ -46,7 +46,8 @@ Shader "CubedParadox/Flat Lit Toon"
 			#pragma geometry geom
 			#pragma fragment frag
 
-			#pragma multi_compile_fwdbase_fullshadows
+			#pragma multi_compile_fwdbase
+			#pragma multi_compile_fog
 
 			float4 frag(VertexOutput i) : COLOR
 			{
@@ -68,7 +69,7 @@ Shader "CubedParadox/Flat Lit Toon"
 				baseColor *= float4(i.col.rgb, 1);
 
 				#if COLORED_OUTLINE
-				if(i.col.a > .5) 
+				if(i.is_outline) 
 				{
 					baseColor.rgb = i.col.rgb; 
 				}
@@ -119,6 +120,7 @@ Shader "CubedParadox/Flat Lit Toon"
 			#pragma fragment frag
 
 			#pragma multi_compile_fwdadd_fullshadows
+			#pragma multi_compile_fog
 
 			float4 frag(VertexOutput i) : COLOR
 			{
@@ -138,7 +140,9 @@ Shader "CubedParadox/Flat Lit Toon"
 				baseColor *= float4(i.col.rgb, 1);
 
 				#if COLORED_OUTLINE
-				if(i.col.a > .5) { baseColor = i.col; }
+				if(i.is_outline) {
+					baseColor.rgb = i.col.rgb;
+				}
 				#endif
 
 				#if defined(_ALPHATEST_ON)
@@ -165,6 +169,9 @@ Shader "CubedParadox/Flat Lit Toon"
 			CGPROGRAM
 			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
 			#include "FlatLitToonShadows.cginc"
+			
+			#pragma multi_compile_shadowcaster
+
 			#pragma vertex vertShadowCaster
 			#pragma fragment fragShadowCaster
 			ENDCG
