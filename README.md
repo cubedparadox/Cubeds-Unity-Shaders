@@ -3,7 +3,8 @@ Cubed's Unity Shaders
 
 A compilation of custom shaders for Unity3D.  
 You can get the latest release [here](https://github.com/cubedparadox/Cubeds-Unity-Shaders/releases)  
-Currently built for Unity 5.6.3p1
+Currently built for Unity 5.6.3p1  
+Installation: Add it to your unity assets (drag and drop in the package, or go to "Assets/Import Package/Custom Package" at the top and from there you can find it in your shaders drop down list automatically.
 
 ## Shaders
 * Flat Lit Toon  
