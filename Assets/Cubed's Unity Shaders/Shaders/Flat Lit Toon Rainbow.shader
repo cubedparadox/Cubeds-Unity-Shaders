@@ -12,7 +12,7 @@ Shader "CubedParadox/Flat Lit Toon Rainbow" {
         _ColorMask ("ColorMask", 2D) = "black" {}
         _Saturation ("Saturation", Float ) = 0
         _Value ("Value", Float ) = 0
-		_Speed ("Speed", Float ) = 0
+        _Speed ("Speed", Float ) = 0
     }
     SubShader {
         Tags {
@@ -63,8 +63,8 @@ Shader "CubedParadox/Flat Lit Toon Rainbow" {
             uniform sampler2D _ColorMask; uniform float4 _ColorMask_ST;
             uniform float _Saturation;
             uniform float _Value;
-			uniform float _Speed;
-			uniform float _Offset;
+            uniform float _Speed;
+
             struct VertexInput {
                 float4 vertex : POSITION;
                 float2 texcoord0 : TEXCOORD0;
@@ -91,7 +91,7 @@ Shader "CubedParadox/Flat Lit Toon Rainbow" {
 ////// Lighting:
                 float attenuation = LIGHT_ATTENUATION(i);
                 float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
-                float4 node_1939 = _Time*_Speed + _TimeEditor;
+                float4 node_1939 = _Time * _Speed + _TimeEditor;
                 float4 _ColorMask_var = tex2D(_ColorMask,TRANSFORM_TEX(i.uv0, _ColorMask));
                 float3 finalColor = (lerp((_MainTex_var.rgb*(lerp(float3(1,1,1),saturate(3.0*abs(1.0-2.0*frac(node_1939.r+float3(0.0,-1.0/3.0,1.0/3.0)))-1),_Saturation)*_Value)),_MainTex_var.rgb,_ColorMask_var.r)*saturate((Function_node_3693( float3(0,1,0) )+CubemapReflections( normalize((_WorldSpaceCameraPos-objPos.rgb)) )+(_LightColor0.rgb*attenuation))));
                 fixed4 finalRGBA = fixed4(finalColor,1);
@@ -135,8 +135,8 @@ Shader "CubedParadox/Flat Lit Toon Rainbow" {
             uniform sampler2D _ColorMask; uniform float4 _ColorMask_ST;
             uniform float _Saturation;
             uniform float _Value;
-			uniform float _Speed;
-			uniform float _Offset;
+            uniform float _Speed;
+
             struct VertexInput {
                 float4 vertex : POSITION;
                 float2 texcoord0 : TEXCOORD0;
@@ -163,7 +163,7 @@ Shader "CubedParadox/Flat Lit Toon Rainbow" {
 ////// Lighting:
                 float attenuation = LIGHT_ATTENUATION(i);
                 float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
-                float4 node_1939 = _Time*_Speed + _TimeEditor;
+                float4 node_1939 = _Time * _Speed + _TimeEditor;
                 float4 _ColorMask_var = tex2D(_ColorMask,TRANSFORM_TEX(i.uv0, _ColorMask));
                 float3 finalColor = (lerp((_MainTex_var.rgb*(lerp(float3(1,1,1),saturate(3.0*abs(1.0-2.0*frac(node_1939.r+float3(0.0,-1.0/3.0,1.0/3.0)))-1),_Saturation)*_Value)),_MainTex_var.rgb,_ColorMask_var.r)*saturate((Function_node_3693( float3(0,1,0) )+CubemapReflections( normalize((_WorldSpaceCameraPos-objPos.rgb)) )+(_LightColor0.rgb*attenuation))));
                 fixed4 finalRGBA = fixed4(finalColor * 1,0);
