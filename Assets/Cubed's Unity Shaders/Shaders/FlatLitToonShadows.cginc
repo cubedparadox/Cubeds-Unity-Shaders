@@ -3,9 +3,6 @@
 #include "UnityCG.cginc"
 #include "UnityShaderVariables.cginc"
 
-#pragma multi_compile_shadowcaster
-#pragma fragmentoption ARB_precision_hint_fastest
-
 // Do dithering for alpha blended shadows on SM3+/desktop;
 // on lesser systems do simple alpha-tested shadows
 #if defined(_ALPHABLEND_ON) || defined(_ALPHAPREMULTIPLY_ON)
