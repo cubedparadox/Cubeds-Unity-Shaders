@@ -4,11 +4,6 @@
 #include "AutoLight.cginc"
 #include "Lighting.cginc"
 
-#pragma multi_compile_fog
-#pragma only_renderers d3d9 d3d11 glcore gles 
-#pragma target 4.0
-//#pragma addshadow
-
 uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
 uniform sampler2D _ColorMask; uniform float4 _ColorMask_ST;
 uniform sampler2D _EmissionMap; uniform float4 _EmissionMap_ST;
