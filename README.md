@@ -8,7 +8,7 @@ Installation: Add it to your unity assets (drag and drop in the package, or go t
 
 ## Shaders
 * Flat Lit Toon  
-![alt text](Media/Flat_Lit_Toon.png) ![alt text](Media/Flat_Lit_Toon_Inspector.png)
+![alt text](Media/Flat_Lit_Toon.png) ![alt text](Media/Flat_Lit_Toon__Inspector.png)
   * Looks like a unlit shader under good neutral lighting, but actually responds to full ambient and realtime lighting color, intensity and shadow. Single Pass with geometry shader outline
 * Unlit Shadowed  
 ![alt text](Media/Unlit_Shadowed_thumb.png)
