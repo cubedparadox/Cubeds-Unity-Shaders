@@ -8,7 +8,7 @@ Installation: Add it to your unity assets (drag and drop in the package, or go t
 
 ## Shaders
 * Flat Lit Toon  
-![alt text](Media/Flat_Lit_Toon.png) ![alt text](Media/Flat_Lit_Toon__Inspector.png)
+![alt text](Media/Flat_Lit_Toon.png) ![alt text](Media/Flat_Lit_Toon_Inspector.png)
   * Looks like a unlit shader under good neutral lighting, but actually responds to full ambient and realtime lighting color, intensity and shadow. Single Pass with geometry shader outline
 * Unlit Shadowed  
 ![alt text](Media/Unlit_Shadowed_thumb.png)
@@ -20,7 +20,7 @@ Installation: Add it to your unity assets (drag and drop in the package, or go t
 ![alt text](Media/Flat_Lit_Toon_Distance_Fade.gif)
   * An (old) version of 'Flat Lit Toon' that fades in based on proximity to camera. Uses noise to dither the fade effect into an alpha cutout. Dither amount, color tint, and color mask are exposed.
 * Simple Gradient Sky  
-![alt text](Media/Simple_Gradient_Sky_thumb.png)
+![alt text](Media/Simple_Gradient_Sky__thumb.png)
   * A simple procedural skybox that fades from a sky color to a horizon color
 
 ## Notes
