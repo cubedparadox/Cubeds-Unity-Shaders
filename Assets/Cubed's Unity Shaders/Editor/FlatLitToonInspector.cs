@@ -34,6 +34,7 @@ public class FlatLitToonInspector : ShaderGUI
     MaterialProperty emissionColor;
     MaterialProperty normalMap;
     MaterialProperty alphaCutoff;
+    MaterialProperty cullMode;
 
     public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
     {
@@ -50,6 +51,7 @@ public class FlatLitToonInspector : ShaderGUI
             emissionColor = FindProperty("_EmissionColor", props);
             normalMap = FindProperty("_BumpMap", props);
             alphaCutoff = FindProperty("_Cutoff", props);
+            cullMode = FindProperty("_CullMode", props);
         }
         
         Material material = materialEditor.target as Material;
@@ -116,11 +118,22 @@ public class FlatLitToonInspector : ShaderGUI
                     case OutlineMode.Colored:
                         materialEditor.ShaderProperty(outlineColor, "Color", 2);
                         materialEditor.ShaderProperty(outlineWidth, new GUIContent("Width", "Outline Width in cm"), 2);
+                        material.SetInt("_CullMode", (int)UnityEngine.Rendering.CullMode.Back);
                         break;
                     case OutlineMode.None:
+                        EditorGUI.BeginChangeCheck();
+                        var doubleSided = (UnityEngine.Rendering.CullMode)cullMode.floatValue == UnityEngine.Rendering.CullMode.Off;
+                        doubleSided = EditorGUILayout.Toggle("Double Sided", doubleSided);
+                        if (EditorGUI.EndChangeCheck()) 
+                        {
+                            materialEditor.RegisterPropertyChangeUndo("Double Sided");
+                            cullMode.floatValue = (float)(doubleSided ? UnityEngine.Rendering.CullMode.Off : UnityEngine.Rendering.CullMode.Back);
+                        }
+                        break;
                     default:
                         break;
-                }                
+                }
+
             }
             EditorGUI.EndChangeCheck();
         }

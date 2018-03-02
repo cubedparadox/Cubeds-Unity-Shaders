@@ -20,6 +20,7 @@ Shader "CubedParadox/Flat Lit Toon"
 		[HideInInspector] _SrcBlend ("__src", Float) = 1.0
 		[HideInInspector] _DstBlend ("__dst", Float) = 0.0
 		[HideInInspector] _ZWrite ("__zw", Float) = 1.0
+		[HideInInspector] _CullMode ("__cm", Float) = 2.0
 	}
 
 	SubShader
@@ -37,6 +38,7 @@ Shader "CubedParadox/Flat Lit Toon"
 
 			Blend [_SrcBlend] [_DstBlend]
 			ZWrite [_ZWrite]
+			Cull [_CullMode]
 
 			CGPROGRAM
 			#include "FlatLitToonCore.cginc"
@@ -113,6 +115,7 @@ Shader "CubedParadox/Flat Lit Toon"
 			Name "FORWARD_DELTA"
 			Tags { "LightMode" = "ForwardAdd" }
 			Blend [_SrcBlend] One
+			Cull [_CullMode]
 
 			CGPROGRAM
 			#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
