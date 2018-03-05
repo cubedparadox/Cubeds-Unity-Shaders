@@ -99,7 +99,10 @@ Shader "CubedParadox/Flat Lit Toon"
 
 				float3 indirectLighting = saturate((ShadeSH9(half4(0.0, -1.0, 0.0, 1.0)) + reflectionMap));
 				float3 directLighting = saturate((ShadeSH9(half4(0.0, 1.0, 0.0, 1.0)) + reflectionMap + _LightColor0.rgb));
+				//Can't do ifdef for frag shader https://forum.unity.com/threads/vertexlight_on-always-undefined-in-fragment-shader.284781/
+				directLighting += i.vertexLight;
 				float3 directContribution = saturate((1.0 - _Shadow) + floor(saturate(remappedLight) * 2.0));
+
 				float3 finalColor = emissive + (baseColor * lerp(indirectLighting, directLighting, directContribution));
 				fixed4 finalRGBA = fixed4(finalColor * lightmap, baseColor.a);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
