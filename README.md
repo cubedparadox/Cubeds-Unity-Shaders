@@ -5,13 +5,15 @@ A compilation of custom shaders for Unity3D.
 You can get the latest release [here](https://github.com/cubedparadox/Cubeds-Unity-Shaders/releases)  
 Currently built for Unity 5.6.3p1  
 Installation: Add it to your unity assets (drag and drop in the package, or go to "Assets/Import Package/Custom Package" at the top and from there you can find it in your shaders drop down list automatically.  
-**Tip Jar:** Github started charging me for bandwith because so many people are downloading my files, tips appreciated <3  
-<a href="https://digitaltipjar.com/cubedparadox?_external=true"><img alt="Tip Jar" style="border-width: 0; background-color: grey;" src="Media/tipbutton.png" /></a>
 
 ## Shaders
 * Flat Lit Toon  
 ![alt text](Media/Flat_Lit_Toon.png) ![alt text](Media/Flat_Lit_Toon__Inspector.png)
-  * Looks like a unlit shader under good neutral lighting, but actually responds to full ambient and realtime lighting color, intensity and shadow. Single Pass with geometry shader outline
+  * Looks like a unlit shader under good neutral lighting, but actually responds to full ambient and realtime lighting color, intensity and shadow. Single Pass with geometry shader outline, may not work on all platforms.
+* Flat Lit Toon Lite  
+  * Lightweight version of Flat Lit Toon, without the heavy geometry pass. Should work well on most systems.
+* Flat Lit Toon Lite Double Sided  
+  * Double sided varient of the lite shader.
 * Unlit Shadowed  
 ![alt text](Media/Unlit_Shadowed_thumb.png)
   * A simple unlit texture shader, has inputs for main color tint and shadow color tint.
