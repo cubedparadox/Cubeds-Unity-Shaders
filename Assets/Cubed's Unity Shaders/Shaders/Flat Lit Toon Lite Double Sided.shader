@@ -89,6 +89,11 @@ Shader "CubedParadox/Flat Lit Toon Lite Double Sided"
 				float3 directContribution = saturate((1.0 - _Shadow) + floor(saturate(remappedLight) * 2.0));
 				float3 finalColor = emissive + (baseColor * lerp(indirectLighting, directLighting, directContribution));
 				fixed4 finalRGBA = fixed4(finalColor * lightmap, baseColor.a);
+
+                #if !defined(_ALPHABLEND_ON) && !defined(_ALPHAPREMULTIPLY_ON)
+                    UNITY_OPAQUE_ALPHA(finalRGBA.a);
+                #endif
+
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
@@ -139,6 +144,11 @@ Shader "CubedParadox/Flat Lit Toon Lite Double Sided"
 				float3 directContribution = floor(saturate(lightContribution) * 2.0);
 				float3 finalColor = baseColor * lerp(0, _LightColor0.rgb, saturate(directContribution + ((1 - _Shadow) * attenuation)));
 				fixed4 finalRGBA = fixed4(finalColor,1) * i.col;
+
+                #if !defined(_ALPHABLEND_ON) && !defined(_ALPHAPREMULTIPLY_ON)
+                    UNITY_OPAQUE_ALPHA(finalRGBA.a);
+                #endif
+
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
