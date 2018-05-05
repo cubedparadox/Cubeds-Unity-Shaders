@@ -49,6 +49,7 @@ struct VertexOutput
 
 VertexOutput vert(appdata_full v) {
 	VertexOutput o;
+    UNITY_INITIALIZE_OUTPUT(VertexOutput, o);
 	o.uv0 = v.texcoord;
 	o.uv1 = v.texcoord1;
 	o.normalDir = normalize(UnityObjectToWorldNormal(v.normal));

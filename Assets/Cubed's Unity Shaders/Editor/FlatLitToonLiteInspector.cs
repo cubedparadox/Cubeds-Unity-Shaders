@@ -6,23 +6,13 @@ using System;
 
 public class FlatLitToonLiteInspector : ShaderGUI
 {
-
-    public enum OutlineMode
+    public enum CullingMode
     {
-        None,
-        Tinted,
-        Colored
+        Off,
+        Front,
+        Back
     }
 
-    public enum BlendMode
-    {
-        Opaque,
-        Cutout,
-        Fade,   // Old school alpha-blending mode, fresnel does not affect amount of transparency
-        Transparent // Physically plausible transparency mode, implemented as alpha pre-multiply
-    }
-
-    MaterialProperty blendMode;
     MaterialProperty mainTexture;
     MaterialProperty color;
     MaterialProperty colorMask;
@@ -30,137 +20,72 @@ public class FlatLitToonLiteInspector : ShaderGUI
     MaterialProperty emissionMap;
     MaterialProperty emissionColor;
     MaterialProperty normalMap;
+    MaterialProperty alphaCutout;
     MaterialProperty alphaCutoff;
+    MaterialProperty cullingMode;
 
-    public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
+    public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
     {
         { //Find Properties
-            blendMode = FindProperty("_Mode", props);
-            mainTexture = FindProperty("_MainTex", props);
-            color = FindProperty("_Color", props);
-            colorMask = FindProperty("_ColorMask", props);
-            shadow = FindProperty("_Shadow", props);
-            emissionMap = FindProperty("_EmissionMap", props);
-            emissionColor = FindProperty("_EmissionColor", props);
-            normalMap = FindProperty("_BumpMap", props);
-            alphaCutoff = FindProperty("_Cutoff", props);
+            mainTexture = FindProperty("_MainTex", properties);
+            color = FindProperty("_Color", properties);
+            colorMask = FindProperty("_ColorMask", properties);
+            shadow = FindProperty("_Shadow", properties);
+            emissionMap = FindProperty("_EmissionMap", properties);
+            emissionColor = FindProperty("_EmissionColor", properties);
+            normalMap = FindProperty("_BumpMap", properties);
+            alphaCutout = FindProperty("_AlphaTest", properties);
+            alphaCutoff = FindProperty("_Cutoff", properties);
+            cullingMode = FindProperty("_Cull", properties);
         }
-        
+
         Material material = materialEditor.target as Material;
 
-        { //Shader Properties GUI
-            EditorGUIUtility.labelWidth = 0f;
-            
+
+        //Shader Properties GUI
+        EditorGUIUtility.labelWidth = 0f;
+
+        EditorGUI.BeginChangeCheck();
+        {
+            EditorGUI.showMixedValue = cullingMode.hasMixedValue;
+            var cMode = (CullingMode)cullingMode.floatValue;
+
             EditorGUI.BeginChangeCheck();
+            cMode = (CullingMode)EditorGUILayout.Popup("Culling Mode", (int)cMode, Enum.GetNames(typeof(CullingMode)));
+            if (EditorGUI.EndChangeCheck())
             {
-                EditorGUI.showMixedValue = blendMode.hasMixedValue;
-                var bMode = (BlendMode)blendMode.floatValue;
-
-                EditorGUI.BeginChangeCheck();
-                bMode = (BlendMode)EditorGUILayout.Popup("Rendering Mode", (int)bMode, Enum.GetNames(typeof(BlendMode)));
-                if (EditorGUI.EndChangeCheck())
-                {
-                    materialEditor.RegisterPropertyChangeUndo("Rendering Mode");
-                    blendMode.floatValue = (float)bMode;
-
-                    foreach (var obj in blendMode.targets)
-                    {
-                        SetupMaterialWithBlendMode((Material)obj, (BlendMode)material.GetFloat("_Mode"));
-                    }
-                }
-
-                EditorGUI.showMixedValue = false;
-
-
-                materialEditor.TexturePropertySingleLine(new GUIContent("Main Texture", "Main Color Texture (RGB)"), mainTexture, color);
-                EditorGUI.indentLevel += 2;
-                if((BlendMode)material.GetFloat("_Mode") == BlendMode.Cutout)
-                    materialEditor.ShaderProperty(alphaCutoff, "Alpha Cutoff", 2);
-                materialEditor.TexturePropertySingleLine(new GUIContent("Color Mask", "Masks Color Tinting (G)"), colorMask);
-                EditorGUI.indentLevel -= 2;
-                materialEditor.TexturePropertySingleLine(new GUIContent("Normal Map", "Normal Map (RGB)"), normalMap);
-                materialEditor.TexturePropertySingleLine(new GUIContent("Emission", "Emission (RGB)"), emissionMap, emissionColor);
-                EditorGUI.BeginChangeCheck();
-                materialEditor.TextureScaleOffsetProperty(mainTexture);
-                if (EditorGUI.EndChangeCheck())
-                    emissionMap.textureScaleAndOffset = mainTexture.textureScaleAndOffset;
-                
-                EditorGUILayout.Space();
-                materialEditor.ShaderProperty(shadow, "Shadow");
+                materialEditor.RegisterPropertyChangeUndo("Rendering Mode");
+                cullingMode.floatValue = (float)cMode;
             }
-            EditorGUI.EndChangeCheck();
-        }
+            EditorGUI.showMixedValue = false;
+            EditorGUILayout.Space();
 
-    }
+            materialEditor.TexturePropertySingleLine(new GUIContent("Main Texture", "Main Color Texture (RGB)"), mainTexture, color);
+            EditorGUI.indentLevel += 1;
+            materialEditor.TexturePropertySingleLine(new GUIContent("Color Mask", "Masks Color Tinting (G)"), colorMask);
+            EditorGUI.indentLevel -= 1;
 
-    public static void SetupMaterialWithBlendMode(Material material, BlendMode blendMode)
-    {
-        switch ((BlendMode)material.GetFloat("_Mode"))
-        {
-            case BlendMode.Opaque:
-                material.SetOverrideTag("RenderType", "");
-                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                material.SetInt("_ZWrite", 1);
-                material.DisableKeyword("_ALPHATEST_ON");
-                material.DisableKeyword("_ALPHABLEND_ON");
-                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                material.renderQueue = -1;
-                break;
-            case BlendMode.Cutout:
-                material.SetOverrideTag("RenderType", "TransparentCutout");
-                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                material.SetInt("_ZWrite", 1);
-                material.EnableKeyword("_ALPHATEST_ON");
-                material.DisableKeyword("_ALPHABLEND_ON");
-                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
-                break;
-            case BlendMode.Fade:
-                material.SetOverrideTag("RenderType", "Transparent");
-                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                material.SetInt("_ZWrite", 0);
-                material.DisableKeyword("_ALPHATEST_ON");
-                material.EnableKeyword("_ALPHABLEND_ON");
-                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-                break;
-            case BlendMode.Transparent:
-                material.SetOverrideTag("RenderType", "Transparent");
-                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                material.SetInt("_ZWrite", 0);
-                material.DisableKeyword("_ALPHATEST_ON");
-                material.DisableKeyword("_ALPHABLEND_ON");
-                material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
-                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-                break;
-        }
-    }
+            materialEditor.TexturePropertySingleLine(new GUIContent("Normal Map", "Normal Map (RGB)"), normalMap);
+            materialEditor.TexturePropertySingleLine(new GUIContent("Emission", "Emission (RGB)"), emissionMap, emissionColor);
+            EditorGUI.BeginChangeCheck();
+            materialEditor.TextureScaleOffsetProperty(mainTexture);
+            if (EditorGUI.EndChangeCheck())
+            {
+                emissionMap.textureScaleAndOffset = mainTexture.textureScaleAndOffset;
+            }
 
-    public static void SetupMaterialWithOutlineMode(Material material, OutlineMode outlineMode)
-    {
-        switch ((OutlineMode)material.GetFloat("_OutlineMode"))
-        {
-            case OutlineMode.None:
-                material.EnableKeyword("NO_OUTLINE");
-                material.DisableKeyword("TINTED_OUTLINE");
-                material.DisableKeyword("COLORED_OUTLINE");
-                break;
-            case OutlineMode.Tinted:
-                material.DisableKeyword("NO_OUTLINE");
-                material.EnableKeyword("TINTED_OUTLINE");
-                material.DisableKeyword("COLORED_OUTLINE");
-                break;
-            case OutlineMode.Colored:
-                material.DisableKeyword("NO_OUTLINE");
-                material.DisableKeyword("TINTED_OUTLINE");
-                material.EnableKeyword("COLORED_OUTLINE");
-                break;
-            default:
-                break;
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            materialEditor.ShaderProperty(alphaCutout, "Alpha Cutout", 0);
+            if (material.GetFloat("_AlphaTest") != 0)
+            {
+                materialEditor.ShaderProperty(alphaCutoff, "Alpha Cutoff", 2);
+            }
+
+            EditorGUILayout.Space();
+            materialEditor.ShaderProperty(shadow, "Shadow");
         }
+        EditorGUI.EndChangeCheck();
+
     }
 }
