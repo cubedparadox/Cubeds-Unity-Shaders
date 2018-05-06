@@ -37,9 +37,6 @@ namespace CubedsUnityShaders
                 cullingMode = FindProperty("_Cull", properties);
             }
 
-            Material material = materialEditor.target as Material;
-
-
             //Shader Properties GUI
             EditorGUIUtility.labelWidth = 0f;
 

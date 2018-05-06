@@ -16,22 +16,6 @@ uniform float4 _EmissionColor;
 
 static const float3 grayscale_vector = float3(0, 0.3823529, 0.01845836);
 
-struct v2g
-{
-	float4 vertex : POSITION;
-	float3 normal : NORMAL;
-	float4 tangent : TANGENT;
-	float2 uv0 : TEXCOORD0;
-	float2 uv1 : TEXCOORD1;
-	float4 posWorld : TEXCOORD2;
-	float3 normalDir : TEXCOORD3;
-	float3 tangentDir : TEXCOORD4;
-	float3 bitangentDir : TEXCOORD5;
-	float4 pos : CLIP_POS;
-	SHADOW_COORDS(6)
-	UNITY_FOG_COORDS(7)
-};
-
 struct VertexOutput
 {
 	float4 pos : SV_POSITION;
@@ -42,7 +26,6 @@ struct VertexOutput
 	float3 tangentDir : TEXCOORD4;
 	float3 bitangentDir : TEXCOORD5;
 	float4 col : COLOR;
-	bool is_outline : IS_OUTLINE;
 	SHADOW_COORDS(6)
 	UNITY_FOG_COORDS(7)
 };
