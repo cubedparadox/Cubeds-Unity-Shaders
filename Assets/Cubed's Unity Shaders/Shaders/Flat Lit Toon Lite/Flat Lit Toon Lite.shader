@@ -28,10 +28,10 @@ Shader "CubedParadox/Flat Lit Toon Lite"
 			Tags { "LightMode" = "ForwardBase" }
 
 			CGPROGRAM
-			#include "FlatLitToonCoreLite.cginc"
+			#include "..\CGIncludes\FlatLitToonCoreLite.cginc"
             #pragma shader_feature _ _ALPHATEST_ON
 			#pragma vertex vert
-			#pragma fragment frag
+			#pragma fragment frag 
 
 			#pragma only_renderers d3d11 glcore gles
 			#pragma target 4.0
@@ -97,7 +97,7 @@ Shader "CubedParadox/Flat Lit Toon Lite"
             Cull [_Cull]
 
 			CGPROGRAM
-			#include "FlatLitToonCoreLite.cginc"
+			#include "..\CGIncludes\FlatLitToonCoreLite.cginc"
             #pragma shader_feature _ _ALPHATEST_ON
 			#pragma vertex vert
 			#pragma fragment frag
@@ -149,7 +149,7 @@ Shader "CubedParadox/Flat Lit Toon Lite"
 
 			CGPROGRAM
 			#pragma shader_feature _ _ALPHATEST_ON
-			#include "FlatLitToonShadows.cginc"
+			#include "..\CGIncludes\FlatLitToonShadows.cginc"
 			
 			#pragma multi_compile_shadowcaster
 			#pragma fragmentoption ARB_precision_hint_fastest

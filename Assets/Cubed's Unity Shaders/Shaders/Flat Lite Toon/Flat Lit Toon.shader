@@ -39,7 +39,7 @@ Shader "CubedParadox/Flat Lit Toon"
 			ZWrite [_ZWrite]
 
 			CGPROGRAM
-			#include "FlatLitToonCore.cginc"
+			#include "..\CGIncludes\FlatLitToonCore.cginc"
 			#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
 			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
 			#pragma vertex vert
@@ -122,7 +122,7 @@ Shader "CubedParadox/Flat Lit Toon"
 			CGPROGRAM
 			#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
 			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-			#include "FlatLitToonCore.cginc"
+			#include "..\CGIncludes\FlatLitToonCore.cginc"
 			#pragma vertex vert
 			#pragma geometry geom
 			#pragma fragment frag
@@ -184,7 +184,7 @@ Shader "CubedParadox/Flat Lit Toon"
 
 			CGPROGRAM
 			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-			#include "FlatLitToonShadows.cginc"
+			#include "..\CGIncludes\FlatLitToonShadows.cginc"
 			
 			#pragma multi_compile_shadowcaster
 			#pragma fragmentoption ARB_precision_hint_fastest
