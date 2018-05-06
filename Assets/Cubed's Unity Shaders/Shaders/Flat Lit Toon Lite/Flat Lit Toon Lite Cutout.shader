@@ -1,4 +1,4 @@
-Shader "CubedParadox/Flat Lit Toon"
+Shader "CubedParadox/Flat Lit Toon Lite Cutout"
 {
 	Properties
 	{
@@ -6,45 +6,27 @@ Shader "CubedParadox/Flat Lit Toon"
 		_Color("Color", Color) = (1,1,1,1)
 		_ColorMask("ColorMask", 2D) = "black" {}
 		_Shadow("Shadow", Range(0, 1)) = 0.4
-		_outline_width("outline_width", Float) = 0.2
-		_outline_color("outline_color", Color) = (0.5,0.5,0.5,1)
-		_outline_tint("outline_tint", Range(0, 1)) = 0.5
 		_EmissionMap("Emission Map", 2D) = "white" {}
 		[HDR]_EmissionColor("Emission Color", Color) = (0,0,0,1)
 		_BumpMap("BumpMap", 2D) = "bump" {}
-		_Cutoff("Alpha cutoff", Range(0,1)) = 0.5
-
-		// Blending state
-		[HideInInspector] _Mode ("__mode", Float) = 0.0
-		[HideInInspector] _OutlineMode("__outline_mode", Float) = 0.0
-		[HideInInspector] _SrcBlend ("__src", Float) = 1.0
-		[HideInInspector] _DstBlend ("__dst", Float) = 0.0
-		[HideInInspector] _ZWrite ("__zw", Float) = 1.0
+		_Cutoff("Alpha Cutoff", Range(0,1)) = 0.5
+        [HideInInspector] _Cull ("__cull", Float) = 2.0
 	}
 
 	SubShader
 	{
-		Tags
-		{
-			"RenderType" = "Opaque"
-		}
-
+		Tags { "Queue"="AlphaTest" "RenderType" = "TransparentCutout" "IgnoreProjector"="True" }
+		Cull [_Cull]
 		Pass
 		{
 
 			Name "FORWARD"
 			Tags { "LightMode" = "ForwardBase" }
 
-			Blend [_SrcBlend] [_DstBlend]
-			ZWrite [_ZWrite]
-
 			CGPROGRAM
-			#include "..\CGIncludes\FlatLitToonCore.cginc"
-			#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
-			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
+			#include "..\CGIncludes\FlatLitToonCoreLite.cginc"
 			#pragma vertex vert
-			#pragma geometry geom
-			#pragma fragment frag
+			#pragma fragment frag 
 
 			#pragma only_renderers d3d11 glcore gles
 			#pragma target 4.0
@@ -71,16 +53,7 @@ Shader "CubedParadox/Flat Lit Toon"
 				float4 baseColor = lerp((_MainTex_var.rgba*_Color.rgba),_MainTex_var.rgba,_ColorMask_var.r);
 				baseColor *= float4(i.col.rgb, 1);
 
-				#if COLORED_OUTLINE
-				if(i.is_outline) 
-				{
-					baseColor.rgb = i.col.rgb; 
-				}
-				#endif
-
-				#if defined(_ALPHATEST_ON)
-        		clip (baseColor.a - _Cutoff);
-    			#endif
+                clip (baseColor.a - _Cutoff);
 				
 				float3 lightmap = float4(1.0,1.0,1.0,1.0);
 				#ifdef LIGHTMAP_ON
@@ -103,10 +76,7 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 finalColor = emissive + (baseColor * lerp(indirectLighting, directLighting, directContribution));
 				fixed4 finalRGBA = fixed4(finalColor * lightmap, baseColor.a);
 
-                #if !defined(_ALPHABLEND_ON) && !defined(_ALPHAPREMULTIPLY_ON)
-                    UNITY_OPAQUE_ALPHA(finalRGBA.a);
-                #endif
-
+                UNITY_OPAQUE_ALPHA(finalRGBA.a);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
@@ -117,14 +87,14 @@ Shader "CubedParadox/Flat Lit Toon"
 		{
 			Name "FORWARD_DELTA"
 			Tags { "LightMode" = "ForwardAdd" }
-			Blend [_SrcBlend] One
+
+			Blend One One
+            Cull [_Cull]
 
 			CGPROGRAM
-			#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
-			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-			#include "..\CGIncludes\FlatLitToonCore.cginc"
+			#include "..\CGIncludes\FlatLitToonCoreLite.cginc"
+            #pragma shader_feature _ _ALPHATEST_ON
 			#pragma vertex vert
-			#pragma geometry geom
 			#pragma fragment frag
 
 			#pragma only_renderers d3d11 glcore gles
@@ -150,25 +120,14 @@ Shader "CubedParadox/Flat Lit Toon"
 				float4 baseColor = lerp((_MainTex_var.rgba*_Color.rgba),_MainTex_var.rgba,_ColorMask_var.r);
 				baseColor *= float4(i.col.rgb, 1);
 
-				#if COLORED_OUTLINE
-				if(i.is_outline) {
-					baseColor.rgb = i.col.rgb;
-				}
-				#endif
-
-				#if defined(_ALPHATEST_ON)
         		clip (baseColor.a - _Cutoff);
-    			#endif
 
 				float lightContribution = dot(normalize(_WorldSpaceLightPos0.xyz - i.posWorld.xyz),normalDirection)*attenuation;
 				float3 directContribution = floor(saturate(lightContribution) * 2.0);
 				float3 finalColor = baseColor * lerp(0, _LightColor0.rgb, saturate(directContribution + ((1 - _Shadow) * attenuation)));
 				fixed4 finalRGBA = fixed4(finalColor,1) * i.col;
 
-                #if !defined(_ALPHABLEND_ON) && !defined(_ALPHAPREMULTIPLY_ON)
-                    UNITY_OPAQUE_ALPHA(finalRGBA.a);
-                #endif
-
+                UNITY_OPAQUE_ALPHA(finalRGBA.a);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
@@ -181,11 +140,11 @@ Shader "CubedParadox/Flat Lit Toon"
 			Tags{ "LightMode" = "ShadowCaster" }
 
 			ZWrite On ZTest LEqual
+            Cull [_Cull]
 
 			CGPROGRAM
-			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
+            #define _ALPHATEST_ON
 			#include "..\CGIncludes\FlatLitToonShadows.cginc"
-			
 			#pragma multi_compile_shadowcaster
 			#pragma fragmentoption ARB_precision_hint_fastest
 
@@ -198,5 +157,5 @@ Shader "CubedParadox/Flat Lit Toon"
 		}
 	}
 	FallBack "Diffuse"
-	CustomEditor "CubedsUnityShaders.FlatLitToonInspector"
+    CustomEditor "CubedsUnityShaders.FlatLitToonLiteCutoutInspector"
 }

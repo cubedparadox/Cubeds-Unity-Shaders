@@ -9,8 +9,6 @@ Shader "CubedParadox/Flat Lit Toon Lite"
 		_EmissionMap("Emission Map", 2D) = "white" {}
 		[HDR]_EmissionColor("Emission Color", Color) = (0,0,0,1)
 		_BumpMap("BumpMap", 2D) = "bump" {}
-        [Toggle] _AlphaTest("Alpha Cutout", Float) = 0
-		_Cutoff("Alpha Cutoff", Range(0,1)) = 0.5
         [HideInInspector] _Cull ("__cull", Float) = 2.0
 	}
 
@@ -18,7 +16,7 @@ Shader "CubedParadox/Flat Lit Toon Lite"
 	{
 		Tags
 		{
-			"RenderType" = "Opaque"
+			"Queue"="Geometry" "RenderType" = "Opaque"
 		}
 		Cull [_Cull]
 		Pass
@@ -29,7 +27,6 @@ Shader "CubedParadox/Flat Lit Toon Lite"
 
 			CGPROGRAM
 			#include "..\CGIncludes\FlatLitToonCoreLite.cginc"
-            #pragma shader_feature _ _ALPHATEST_ON
 			#pragma vertex vert
 			#pragma fragment frag 
 
@@ -58,10 +55,6 @@ Shader "CubedParadox/Flat Lit Toon Lite"
 				float4 baseColor = lerp((_MainTex_var.rgba*_Color.rgba),_MainTex_var.rgba,_ColorMask_var.r);
 				baseColor *= float4(i.col.rgb, 1);
 
-				#if defined(_ALPHATEST_ON)
-        		clip (baseColor.a - _Cutoff);
-    			#endif
-				
 				float3 lightmap = float4(1.0,1.0,1.0,1.0);
 				#ifdef LIGHTMAP_ON
 				lightmap = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv1 * unity_LightmapST.xy + unity_LightmapST.zw));
@@ -82,6 +75,8 @@ Shader "CubedParadox/Flat Lit Toon Lite"
 				float3 directContribution = saturate((1.0 - _Shadow) + floor(saturate(remappedLight) * 2.0));
 				float3 finalColor = emissive + (baseColor * lerp(indirectLighting, directLighting, directContribution));
 				fixed4 finalRGBA = fixed4(finalColor * lightmap, baseColor.a);
+
+                UNITY_OPAQUE_ALPHA(finalRGBA.a);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
@@ -98,7 +93,6 @@ Shader "CubedParadox/Flat Lit Toon Lite"
 
 			CGPROGRAM
 			#include "..\CGIncludes\FlatLitToonCoreLite.cginc"
-            #pragma shader_feature _ _ALPHATEST_ON
 			#pragma vertex vert
 			#pragma fragment frag
 
@@ -125,14 +119,12 @@ Shader "CubedParadox/Flat Lit Toon Lite"
 				float4 baseColor = lerp((_MainTex_var.rgba*_Color.rgba),_MainTex_var.rgba,_ColorMask_var.r);
 				baseColor *= float4(i.col.rgb, 1);
 
-				#if defined(_ALPHATEST_ON)
-        		clip (baseColor.a - _Cutoff);
-    			#endif
-
 				float lightContribution = dot(normalize(_WorldSpaceLightPos0.xyz - i.posWorld.xyz),normalDirection)*attenuation;
 				float3 directContribution = floor(saturate(lightContribution) * 2.0);
 				float3 finalColor = baseColor * lerp(0, _LightColor0.rgb, saturate(directContribution + ((1 - _Shadow) * attenuation)));
-				fixed4 finalRGBA = fixed4(finalColor,1) * i.col;
+				fixed4 finalRGBA = fixed4(finalColor, 1) * i.col;
+
+                UNITY_OPAQUE_ALPHA(finalRGBA.a);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
@@ -148,7 +140,6 @@ Shader "CubedParadox/Flat Lit Toon Lite"
             Cull [_Cull]
 
 			CGPROGRAM
-			#pragma shader_feature _ _ALPHATEST_ON
 			#include "..\CGIncludes\FlatLitToonShadows.cginc"
 			
 			#pragma multi_compile_shadowcaster
@@ -163,5 +154,5 @@ Shader "CubedParadox/Flat Lit Toon Lite"
 		}
 	}
 	FallBack "Diffuse"
-    CustomEditor "FlatLitToonLiteInspector"
+    CustomEditor "CubedsUnityShaders.FlatLitToonLiteInspector"
 }
