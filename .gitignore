@@ -80,3 +80,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 .vs/
+Assets/VRCSDK/
+Assets/Plugins/VRCSDK/
+Assets/VRCSDK.meta
+Assets/Plugins/VRCSDK.meta
+Assets/Plugins.meta

@@ -39,7 +39,7 @@ Shader "CubedParadox/Flat Lit Toon"
 			ZWrite [_ZWrite]
 
 			CGPROGRAM
-			#include "FlatLitToonCore.cginc"
+			#include "..\CGIncludes\FlatLitToonCore.cginc"
 			#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
 			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
 			#pragma vertex vert
@@ -102,6 +102,11 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 directContribution = saturate((1.0 - _Shadow) + floor(saturate(remappedLight) * 2.0));
 				float3 finalColor = emissive + (baseColor * lerp(indirectLighting, directLighting, directContribution));
 				fixed4 finalRGBA = fixed4(finalColor * lightmap, baseColor.a);
+
+                #if !defined(_ALPHABLEND_ON) && !defined(_ALPHAPREMULTIPLY_ON)
+                    UNITY_OPAQUE_ALPHA(finalRGBA.a);
+                #endif
+
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
@@ -117,7 +122,7 @@ Shader "CubedParadox/Flat Lit Toon"
 			CGPROGRAM
 			#pragma shader_feature NO_OUTLINE TINTED_OUTLINE COLORED_OUTLINE
 			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-			#include "FlatLitToonCore.cginc"
+			#include "..\CGIncludes\FlatLitToonCore.cginc"
 			#pragma vertex vert
 			#pragma geometry geom
 			#pragma fragment frag
@@ -159,6 +164,11 @@ Shader "CubedParadox/Flat Lit Toon"
 				float3 directContribution = floor(saturate(lightContribution) * 2.0);
 				float3 finalColor = baseColor * lerp(0, _LightColor0.rgb, saturate(directContribution + ((1 - _Shadow) * attenuation)));
 				fixed4 finalRGBA = fixed4(finalColor,1) * i.col;
+
+                #if !defined(_ALPHABLEND_ON) && !defined(_ALPHAPREMULTIPLY_ON)
+                    UNITY_OPAQUE_ALPHA(finalRGBA.a);
+                #endif
+
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
@@ -174,7 +184,7 @@ Shader "CubedParadox/Flat Lit Toon"
 
 			CGPROGRAM
 			#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-			#include "FlatLitToonShadows.cginc"
+			#include "..\CGIncludes\FlatLitToonShadows.cginc"
 			
 			#pragma multi_compile_shadowcaster
 			#pragma fragmentoption ARB_precision_hint_fastest
@@ -188,5 +198,5 @@ Shader "CubedParadox/Flat Lit Toon"
 		}
 	}
 	FallBack "Diffuse"
-	CustomEditor "FlatLitToonInspector"
+	CustomEditor "CubedsUnityShaders.FlatLitToonInspector"
 }
