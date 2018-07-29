@@ -32,7 +32,33 @@ struct v2g
 	float4 pos : CLIP_POS;
 	SHADOW_COORDS(6)
 	UNITY_FOG_COORDS(7)
+
+	//Since ifdef won't work in geom we must always pass this
+	half3 vertexLight : TEXCOORD8;
 };
+
+//Based on Standard Shader's forwardbase vertex lighting calculations in VertexGIForward
+inline half3 VertexLightContribution(float3 posWorld, half3 normalWorld)
+{
+	half3 vertexLight = 0;
+
+	// Static lightmaps
+	#ifdef LIGHTMAP_ON
+		return 0;
+	#elif UNITY_SHOULD_SAMPLE_SH
+		#ifdef VERTEXLIGHT_ON
+			// Approximated illumination from non-important point lights
+			vertexLight = Shade4PointLights(
+				unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
+				unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
+				unity_4LightAtten0, posWorld, normalWorld);
+		#endif
+
+		vertexLight = ShadeSHPerVertex(normalWorld, vertexLight);
+	#endif
+
+	return vertexLight;
+}
 
 v2g vert(appdata_full v) {
 	v2g o;
@@ -50,6 +76,11 @@ v2g vert(appdata_full v) {
 	o.pos = UnityObjectToClipPos(v.vertex);
 	TRANSFER_SHADOW(o);
 	UNITY_TRANSFER_FOG(o, o.pos);
+#if VERTEXLIGHT_ON
+	o.vertexLight = VertexLightContribution(o.posWorld, o.normal);
+#else
+	o.vertexLight = 0;
+#endif
 	return o;
 }
 
@@ -66,6 +97,9 @@ struct VertexOutput
 	bool is_outline : IS_OUTLINE;
 	SHADOW_COORDS(6)
 	UNITY_FOG_COORDS(7)
+
+	//Since ifdef won't work in frag we must always pass this
+	half3 vertexLight : TEXCOORD8;
 };
 
 [maxvertexcount(6)]
@@ -124,6 +158,9 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
 		#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
 		o.fogCoord = IN[ii].fogCoord;
 		#endif
+
+		// Pass-through the vertex light information.
+		o.vertexLight = IN[ii].vertexLight;
 
 		tristream.Append(o);
 	}
