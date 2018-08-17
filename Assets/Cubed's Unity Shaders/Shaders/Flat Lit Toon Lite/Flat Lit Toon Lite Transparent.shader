@@ -88,7 +88,7 @@ Shader "CubedParadox/Flat Lit Toon Lite Transparent"
 			Name "FORWARD_DELTA"
 			Tags { "LightMode" = "ForwardAdd" }
 
-			Blend One One
+			Blend SrcAlpha One
             ZWrite Off
             Cull [_Cull]
 
@@ -124,7 +124,7 @@ Shader "CubedParadox/Flat Lit Toon Lite Transparent"
 				float lightContribution = dot(normalize(_WorldSpaceLightPos0.xyz - i.posWorld.xyz),normalDirection)*attenuation;
 				float3 directContribution = floor(saturate(lightContribution) * 2.0);
 				float3 finalColor = baseColor * lerp(0, _LightColor0.rgb, saturate(directContribution + ((1 - _Shadow) * attenuation)));
-				fixed4 finalRGBA = fixed4(finalColor,1) * i.col;
+				fixed4 finalRGBA = fixed4(finalColor, baseColor.a) * i.col;
 
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
