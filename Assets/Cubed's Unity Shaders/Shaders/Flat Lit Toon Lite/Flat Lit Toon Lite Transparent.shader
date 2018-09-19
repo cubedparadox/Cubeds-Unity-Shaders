@@ -22,11 +22,11 @@ Shader "CubedParadox/Flat Lit Toon Lite Transparent"
 
 			Name "FORWARD"
 			Tags { "LightMode" = "ForwardBase" }
-            Blend SrcAlpha OneMinusSrcAlpha
+            Blend One OneMinusSrcAlpha
             ZWrite Off
 
 			CGPROGRAM
-            #define _ALPHABLEND_ON 1
+            #define _ALPHAPREMULTIPLY_ON 1
 			#include "..\CGIncludes\FlatLitToonCoreLite.cginc"
 			#pragma vertex vert
 			#pragma fragment frag 
@@ -93,7 +93,7 @@ Shader "CubedParadox/Flat Lit Toon Lite Transparent"
             Cull [_Cull]
 
 			CGPROGRAM
-            #define _ALPHABLEND_ON 1
+            #define _ALPHAPREMULTIPLY_ON 1
 			#include "..\CGIncludes\FlatLitToonCoreLite.cginc"
 			#pragma vertex vert
 			#pragma fragment frag
@@ -141,7 +141,7 @@ Shader "CubedParadox/Flat Lit Toon Lite Transparent"
             Cull [_Cull]
 
 			CGPROGRAM
-            #define _ALPHABLEND_ON 1
+            #define _ALPHAPREMULTIPLY_ON 1
 			#include "..\CGIncludes\FlatLitToonShadows.cginc"
 			#pragma multi_compile_shadowcaster
 			#pragma fragmentoption ARB_precision_hint_fastest
