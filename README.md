@@ -4,7 +4,9 @@ Cubed's Unity Shaders
 A compilation of custom shaders for Unity3D.  
 You can get the latest release [here](https://github.com/cubedparadox/Cubeds-Unity-Shaders/releases)  
 Currently built for Unity 5.6.3p1  
-Installation: Add it to your unity assets (drag and drop in the package, or go to "Assets/Import Package/Custom Package" at the top and from there you can find it in your shaders drop down list automatically.  
+Installation: Add it to your unity assets (drag and drop in the package, or go to "Assets/Import Package/Custom Package" at the top and from there you can find it in your shaders drop down list automatically.
+
+NOTE: These shaders are meant for use on avatars and do not support lightmapping.
 
 ## Shaders
 * Flat Lit Toon  
@@ -28,7 +30,6 @@ Installation: Add it to your unity assets (drag and drop in the package, or go t
   * A simple procedural skybox that fades from a sky color to a horizon color
 
 ## Notes
-I've added an Amplify Shader Editor template! You can download it **here**: [FlatLitToonAmplifyTemplate.unitypackage](https://github.com/cubedparadox/Cubeds-Unity-Shaders/raw/master/Packages/FlatLitToonAmplifyTemplate.unitypackage)  
 Project contains the following assets:  
 * <a href="http://acegikmo.com/shaderforge/">ShaderForge</a> (gitignored)
 * <a href="http://unity-chan.com/">SD UnityChan</a>
