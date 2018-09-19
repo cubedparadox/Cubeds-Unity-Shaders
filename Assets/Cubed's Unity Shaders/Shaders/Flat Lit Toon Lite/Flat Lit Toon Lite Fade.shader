@@ -1,4 +1,4 @@
-Shader "CubedParadox/Flat Lit Toon Lite Transparent"
+Shader "CubedParadox/Flat Lit Toon Lite Fade"
 {
 	Properties
 	{
@@ -22,11 +22,11 @@ Shader "CubedParadox/Flat Lit Toon Lite Transparent"
 
 			Name "FORWARD"
 			Tags { "LightMode" = "ForwardBase" }
-            Blend One OneMinusSrcAlpha
+            Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
 
 			CGPROGRAM
-            #define _ALPHAPREMULTIPLY_ON 1
+            #define _ALPHABLEND_ON 1
 			#include "..\CGIncludes\FlatLitToonCoreLite.cginc"
 			#pragma vertex vert
 			#pragma fragment frag 
@@ -88,12 +88,12 @@ Shader "CubedParadox/Flat Lit Toon Lite Transparent"
 			Name "FORWARD_DELTA"
 			Tags { "LightMode" = "ForwardAdd" }
 
-			Blend One One
+			Blend SrcAlpha One
             ZWrite Off
             Cull [_Cull]
 
 			CGPROGRAM
-            #define _ALPHAPREMULTIPLY_ON 1
+            #define _ALPHABLEND_ON 1
 			#include "..\CGIncludes\FlatLitToonCoreLite.cginc"
 			#pragma vertex vert
 			#pragma fragment frag
@@ -124,7 +124,7 @@ Shader "CubedParadox/Flat Lit Toon Lite Transparent"
 				float lightContribution = dot(normalize(_WorldSpaceLightPos0.xyz - i.posWorld.xyz),normalDirection)*attenuation;
 				float3 directContribution = floor(saturate(lightContribution) * 2.0);
 				float3 finalColor = baseColor * lerp(0, _LightColor0.rgb, saturate(directContribution + ((1 - _Shadow) * attenuation)));
-				fixed4 finalRGBA = fixed4(finalColor,1) * i.col;
+				fixed4 finalRGBA = fixed4(finalColor,baseColor.a);
 
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
@@ -141,7 +141,7 @@ Shader "CubedParadox/Flat Lit Toon Lite Transparent"
             Cull [_Cull]
 
 			CGPROGRAM
-            #define _ALPHAPREMULTIPLY_ON 1
+            #define _ALPHABLEND_ON 1
 			#include "..\CGIncludes\FlatLitToonShadows.cginc"
 			#pragma multi_compile_shadowcaster
 			#pragma fragmentoption ARB_precision_hint_fastest
