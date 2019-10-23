@@ -1,3 +1,8 @@
+# Deprecated
+This shader is **no longer updated** and is considered deprecated. It may not operate properly in current or future updates of VRChat.
+
+You are strongly encouraged to use another shader!
+
 Cubed's Unity Shaders
 ============
 
